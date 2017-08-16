@@ -1,4 +1,4 @@
-DR.CHECKER : A Soundy Analysis for Linux Kernel Drivers
+DR.CHECKER : A Sound Vulnerability Detection Tool for Linux Kernel Drivers
 ===================
 
 [![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
@@ -47,7 +47,7 @@ cd llvm_analysis
 This depends on the successful completion of [Build](#markdown-header-building).
 To run DR.CHECKER on kernel drivers, we need to first convert them into llvm bitcode.
 ### 3.1 Building kernel
-First, we need to have a buildable kernel. Which means we should be able to compile the kernel using regular build setup. i.e., make.
+First, we need to have a buildable kernel. Which means you should be able to compile the kernel using regular build setup. i.e., `make`.
 We first capture the output of `make` command, from this output we extract the extract compilation command.
 #### 3.1.1 Generating output of `make` (or `makeout.txt`)
 Just pass `V=1` and redirect the output to the file.
@@ -55,6 +55,7 @@ Example:
 ```
 make V=1 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
+Thats it. DR.CHECKER will take care from here.
 ### 3.2 Running DR.CHECKER analysis
 There are several steps to run DR.CHECKER analysis, all these steps are wrapped in a single script `helper_scripts/runner_scripts/run_all.py`
 How to run:
@@ -84,7 +85,49 @@ optional arguments:
   -f SOUNDY_ANALYSIS_OUT    Path to the output folder where the soundy analysis output should be stored.
 
 ```
+The script builds, links and runs DR.CHECKER on all the drivers, as such might take considerable time. If you want to run DR.CHECKER manually on individual drivers, refer [standalone](https://github.com/ucsb-seclab/dr_checker/tree/master/docs/standalone.md)
+
+The above script performs following tasks in a multiprocesser mode to make use of all CPU cores:
+#### 1. LLVM Build 
+* Enabled by default.
+
+All the bitcode files generated will be placed in the folder provided to the argument `-l`.
+This step takes considerable time, depending on the number of cores you have. 
+So, if you had already done this step, You can skip this step by passing `-skb`. 
+#### 2. Linking all driver bitcode files in s consolidated bitcode file.
+* Enabled by default
+
+This performs linking, it goes through all the bitcode files and identifies the related bitcode files that need to be linked and links them (using `llvm-link`) in to a consolidated bitcode file (which will be stored along side corresponding bitcode file).
+
+Similar to the above step, you can skip this step by passing `-skl`.
+#### 3.Parsing headers to identify entry function fields.
+* Enabled by default.
+
+This step looks for the entry point declarations in the header files and stores their configuration in the file: `hdr_file_config.txt` under LLVM build directory.
+
+To skip: `-skp`
+#### 4.Identify entry points in all the consolidated bitcode files.
+* Enabled by default
+
+This step identifies all the entry points across all the driver consolidated bitcode files.
+The output will be stored in file: `entry_point_out.txt` under LLVM build directory.
+
+Example of contents in the file `entry_point_out.txt`:
+```
+FileRead:hidraw_read:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc
+FileWrite:hidraw_write:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc
+IOCTL:hidraw_ioctl:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc
+```
+To skip: `-ske`
+#### 5.Run Soundy Analysis on all the identified entry points.
+* Enabled by default.
+
+This step will run DR.CHEKER on all the entry points in the file `entry_point_out.txt`. The output for each entry point will be stored in the folder provided for option `-f`.
+
+To skip: `-ski`
 #### 3.2.1 Example:
+Now, we will show an example from the point where you have kernel sources to the point of getting vulnerability warnings.
+
 We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
 First download and extract the above file.
 
