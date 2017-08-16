@@ -1,4 +1,8 @@
-# DR.CHECKER : A Soundy Analysis for Linux Kernel Drivers
+DR.CHECKER : A Soundy Analysis for Linux Kernel Drivers
+===================
+
+[![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
+
 This repo contains all the sources, including setup scripts.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
