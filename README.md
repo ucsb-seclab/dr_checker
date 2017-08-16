@@ -3,11 +3,20 @@ DR.CHECKER : A Soundy Analysis for Linux Kernel Drivers
 
 [![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
 
+## Contents
+1. [Setup](#1-setup)
+2. [Build](#2-building)
+3. [Running](#3-running)
+    3.1 [Building Kernel](#31-building-kernel)
+    3.2 [Running DR.CHECKER analysis](#32-running-dr.checker-analysis)
+4. [Coming Soon](#4-coming-soon)
+5. [Contact](#5-contact)
+
 This repo contains all the sources, including setup scripts.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 
-## Setup
+## 1. Setup
 Our implementation is based on LLVM, specifically LLVM 3.8. We also need tools like `c2xml` to parse headers.
 We have created a single script, which downloads and builds all the required tools.
 ```
@@ -27,26 +36,26 @@ Example:
 python setup_drchecker.py -o drchecker_deps
 ```
 To complete the setup you also need modifications to your local `PATH` environment variable. The setup script will give you exact changes you need to do.
-## Building
+## 2. Building
 This depends on the successful completion of [Setup](#markdown-header-setup).
 We have a single script that builds everything, you are welcome.
 ```
 cd llvm_analysis
 ./build.sh
 ```
-## Running
+## 3. Running
 This depends on the successful completion of [Build](#markdown-header-building).
 To run DR.CHECKER on kernel drivers, we need to first convert them into llvm bitcode.
-### Building kernel
+### 3.1 Building kernel
 First, we need to have a buildable kernel. Which means we should be able to compile the kernel using regular build setup. i.e., make.
 We first capture the output of `make` command, from this output we extract the extract compilation command.
-#### Generating output of `make` (or `makeout.txt`)
+#### 3.1.1 Generating output of `make` (or `makeout.txt`)
 Just pass `V=1` and redirect the output to the file.
 Example:
 ```
 make V=1 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
-### Running DR.CHECKER analysis
+### 3.2 Running DR.CHECKER analysis
 There are several steps to run DR.CHECKER analysis, all these steps are wrapped in a single script `helper_scripts/runner_scripts/run_all.py`
 How to run:
 ```
@@ -75,13 +84,13 @@ optional arguments:
   -f SOUNDY_ANALYSIS_OUT    Path to the output folder where the soundy analysis output should be stored.
 
 ```
-#### Example:
+#### 3.2.1 Example:
 We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
 First download and extract the above file.
 
 Lets say you extracted the above file in a folder called: `~/mediatek_kernel`
 
-##### Building
+##### 3.2.1.1 Building
 ```
 cd ~/mediatek_kernel
 source ./env.sh
@@ -92,7 +101,7 @@ make O=out ARCH=arm64 tubads_defconfig
 # this following command copies all the compilation commands to makeout.txt
 make V=1 -j8 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
-##### Running DR.CHECKER
+##### 3.2.1.2 Running DR.CHECKER
 ```
 cd <repo_path>/helper_scripts/runner_scripts
 
@@ -100,8 +109,8 @@ python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kerne
 ```
 The above command takes quite some time (30 min - 1hr), all the analysis results will be in the folder: `~/mediatek_kernel/dr_checker_out`, for each entry point a `.json` file will be created which contains all the warnings in JSON format.
 
-#### Things to note:
-##### Value for option `-g`
+#### 3.2.2 Things to note:
+##### 3.2.2.1 Value for option `-g`
 To provide value for option `-g` you need to know the name of the `-gcc` binary used to compile the kernel.
 An easy way to know this would be to `grep` for `gcc` in `makeout.txt` and you will see compiler commands from which you can know the '-gcc` binary name.
 
@@ -113,16 +122,20 @@ So, the value for `-g` should be `aarch64-linux-android-gcc`.
 
 If the kernel to be built is 32-bit then the binary most likely will be `arm-eabi-gcc`
 
-##### Value for option `-a`
+##### 3.2.2.2 Value for option `-a`
 Depeding on the chipset type, you need to provide corresponding number.
 
-##### Value for option `-o`
+##### 3.2.2.3 Value for option `-o`
 This is the path of the folder provided to the option `O=` for `make` command, while building kernel.
 
 Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
 
 Have fun!!
 
-## Contact
+## 4. Coming Soon
+
+UI to browse through the warnings!!!
+
+## 5. Contact
 Aravind Machiry (machiry@cs.ucsb.edu)
 
