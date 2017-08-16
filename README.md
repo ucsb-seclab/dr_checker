@@ -79,7 +79,7 @@ Lets say you extracted the above file in a folder called: `~/mediatek_kernel`
 
 ##### Building
 ```
-cd mediatek_kernel
+cd ~/mediatek_kernel
 source ./env.sh
 cd kernel-3.18
 # the following step may not be needed depending on the kernel
@@ -105,7 +105,9 @@ For our example above, if your `grep gcc makeout.txt`, you will see lot of lines
 ```
 aarch64-linux-android-gcc -Wp,-MD,fs/jbd2/.transaction.o.d  -nostdinc -isystem ...
 ```
-So, the value for `-g` should be `aarch64-linux-android-gcc`
+So, the value for `-g` should be `aarch64-linux-android-gcc`. 
+
+If the kernel to be built is 32-bit then the binary most likely will be `arm-eabi-gcc`
 
 ##### Value for option `-a`
 Depeding on the chipset type, you need to provide corresponding number.
@@ -113,7 +115,9 @@ Depeding on the chipset type, you need to provide corresponding number.
 ##### Value for option `-o`
 This is the path of the folder provided to the option `O=` for `make` command, while building kernel.
 
-Not, all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
+Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
+
+Have fun!!
 
 ## Contact
 Aravind Machiry (machiry@cs.ucsb.edu)
