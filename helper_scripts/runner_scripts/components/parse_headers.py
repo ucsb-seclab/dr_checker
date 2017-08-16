@@ -151,7 +151,6 @@ def _run_c2xml(c2xml_bin, makeout_file, dst_hdr_file_list, output_file, dst_work
         back_wd = os.getcwd()
         if dst_work_dir is not None:
             os.chdir(dst_work_dir)
-        # print "Running Command:" + cmd_line
         os.system(cmd_line)
         if os.path.exists(dummy_out_file) and os.stat(dummy_out_file).st_size > 0:
             root = ET.parse(dummy_out_file).getroot()

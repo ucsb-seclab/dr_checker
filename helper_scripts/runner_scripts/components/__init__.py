@@ -7,6 +7,5 @@ from entry_point_identifier import *
 from soundy_analysis_runner import *
 from llvm_build import *
 from parse_headers import *
-from generate_includes import *
 
 

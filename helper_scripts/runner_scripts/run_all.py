@@ -42,9 +42,6 @@ def setup_args():
     parser.add_argument('-ske', action='store_true', dest='skip_entry_identifier', default=False,
                         help='Skip Entry point identification (default: not skipped).')
 
-    parser.add_argument('-skI', action='store_true', dest='skip_generate_includes', default=False,
-                        help='Skip Generate Includes (default: not skipped).')
-
     parser.add_argument('-ski', action='store_true', dest='skip_soundy_checker', default=False,
                         help='Skip Soundy Analysis (default: not skipped).')
 
@@ -64,9 +61,9 @@ def main():
     parsed_args = arg_parser.parse_args()
     arg_dict = dict()
     utils_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    utils_dir = os.path.join(utils_dir, "../../llvm_analysis")
+    utils_dir = os.path.join(utils_dir, "../llvm_analysis")
     ana_helpers = os.path.join(utils_dir, "AnalysisHelpers")
-    passes_dir = os.path.join(utils_dir, "MainAnalysisPasses")
+    passes_dir = os.path.join(utils_dir, "MainAnalysisPasses/build_dir")
     # step 1: Setup common dictionary
     arg_dict['llvm_bc_out'] = parsed_args.llvm_bc_out
     arg_dict['dr_link_bin'] = os.path.join(ana_helpers, "Dr_linker/dr_linker")
@@ -92,8 +89,6 @@ def main():
         target_components.append(LLVMBuild(arg_dict))
     if not parsed_args.skip_dr_linker:
         target_components.append(DriverLinker(arg_dict))
-    if not parsed_args.skip_generate_includes:
-        target_components.append(GenerateIncludes(arg_dict))
     if not parsed_args.skip_parse_headers:
         target_components.append(ParseHeaders(arg_dict))
     if not parsed_args.skip_entry_identifier:

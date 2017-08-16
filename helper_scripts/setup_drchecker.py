@@ -3,7 +3,6 @@ This script clones and setups llvm and friends in the provided folder.
 """
 
 import argparse
-from components import *
 from multiprocessing import cpu_count
 
 LLVM_GIT_HUB_BASE = "https://github.com/llvm-mirror/"
