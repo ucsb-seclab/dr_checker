@@ -1,2 +1,5 @@
 **.pyc
 **/.idea/
+llvm_analysis/MainAnalysisPasses/build_dir/
+llvm_analysis/AnalysisHelpers/Dr_linker/dr_linker
+llvm_analysis/AnalysisHelpers/EntryPointIdentifier/entry_point_handler
