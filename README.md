@@ -1,4 +1,4 @@
-DR.CHECKER : A Sound Vulnerability Detection Tool for Linux Kernel Drivers
+DR.CHECKER : A Soundy Vulnerability Detection Tool for Linux Kernel Drivers
 ===================
 
 [![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
