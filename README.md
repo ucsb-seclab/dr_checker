@@ -48,7 +48,7 @@ This depends on the successful completion of [Build](#markdown-header-building).
 To run DR.CHECKER on kernel drivers, we need to first convert them into llvm bitcode.
 ### 3.1 Building kernel
 First, we need to have a buildable kernel. Which means you should be able to compile the kernel using regular build setup. i.e., `make`.
-We first capture the output of `make` command, from this output we extract the extract compilation command.
+We first capture the output of `make` command, from this output we extract the exact compilation command.
 #### 3.1.1 Generating output of `make` (or `makeout.txt`)
 Just pass `V=1` and redirect the output to the file.
 Example:
