@@ -4,6 +4,35 @@ This script clones and setups llvm and friends in the provided folder.
 
 import argparse
 from multiprocessing import cpu_count
+import os
+
+def log_info(*args):
+    log_str = "[*] "
+    for curr_a in args:
+        log_str = log_str + " " + str(curr_a)
+    print log_str
+
+
+def log_error(*args):
+    log_str = "[!] "
+    for curr_a in args:
+        log_str = log_str + " " + str(curr_a)
+    print log_str
+
+
+def log_warning(*args):
+    log_str = "[?] "
+    for curr_a in args:
+        log_str = log_str + " " + str(curr_a)
+    print log_str
+
+
+def log_success(*args):
+    log_str = "[+] "
+    for curr_a in args:
+        log_str = log_str + " " + str(curr_a)
+    print log_str
+    
 
 LLVM_GIT_HUB_BASE = "https://github.com/llvm-mirror/"
 SPARSE_URL = "git://git.kernel.org/pub/scm/devel/sparse/sparse.git"
