@@ -9,8 +9,7 @@ DR.CHECKER : A Soundy Vulnerability Detection Tool for Linux Kernel Drivers
 3. [Running](#3-running)
     3.1 [Building Kernel](#31-building-kernel)
     3.2 [Running DR.CHECKER analysis](#32-running-dr.checker-analysis)
-4. [Coming Soon](#4-coming-soon)
-5. [Contact](#5-contact)
+4. [Contact](#4-contact)
 
 This repo contains all the sources, including setup scripts.
 ### Tested on
@@ -88,25 +87,25 @@ optional arguments:
 The script builds, links and runs DR.CHECKER on all the drivers, as such might take considerable time. If you want to run DR.CHECKER manually on individual drivers, refer [standalone](https://github.com/ucsb-seclab/dr_checker/tree/master/docs/standalone.md)
 
 The above script performs following tasks in a multiprocesser mode to make use of all CPU cores:
-#### 1. LLVM Build 
+#### 3.2.1. LLVM Build 
 * Enabled by default.
 
 All the bitcode files generated will be placed in the folder provided to the argument `-l`.
 This step takes considerable time, depending on the number of cores you have. 
 So, if you had already done this step, You can skip this step by passing `-skb`. 
-#### 2. Linking all driver bitcode files in s consolidated bitcode file.
+#### 3.2.2. Linking all driver bitcode files in s consolidated bitcode file.
 * Enabled by default
 
 This performs linking, it goes through all the bitcode files and identifies the related bitcode files that need to be linked and links them (using `llvm-link`) in to a consolidated bitcode file (which will be stored along side corresponding bitcode file).
 
 Similar to the above step, you can skip this step by passing `-skl`.
-#### 3.Parsing headers to identify entry function fields.
+#### 3.2.3.Parsing headers to identify entry function fields.
 * Enabled by default.
 
 This step looks for the entry point declarations in the header files and stores their configuration in the file: `hdr_file_config.txt` under LLVM build directory.
 
 To skip: `-skp`
-#### 4.Identify entry points in all the consolidated bitcode files.
+#### 3.2.4.Identify entry points in all the consolidated bitcode files.
 * Enabled by default
 
 This step identifies all the entry points across all the driver consolidated bitcode files.
@@ -119,13 +118,13 @@ FileWrite:hidraw_write:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm
 IOCTL:hidraw_ioctl:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc
 ```
 To skip: `-ske`
-#### 5.Run Soundy Analysis on all the identified entry points.
+#### 3.2.5.Run Soundy Analysis on all the identified entry points.
 * Enabled by default.
 
 This step will run DR.CHEKER on all the entry points in the file `entry_point_out.txt`. The output for each entry point will be stored in the folder provided for option `-f`.
 
 To skip: `-ski`
-#### 3.2.1 Example:
+#### 3.2.6 Example:
 Now, we will show an example from the point where you have kernel sources to the point of getting vulnerability warnings.
 
 We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
@@ -133,7 +132,7 @@ First download and extract the above file.
 
 Lets say you extracted the above file in a folder called: `~/mediatek_kernel`
 
-##### 3.2.1.1 Building
+##### 3.2.6.1 Building
 ```
 cd ~/mediatek_kernel
 source ./env.sh
@@ -144,7 +143,7 @@ make O=out ARCH=arm64 tubads_defconfig
 # this following command copies all the compilation commands to makeout.txt
 make V=1 -j8 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
-##### 3.2.1.2 Running DR.CHECKER
+##### 3.2.6.2 Running DR.CHECKER
 ```
 cd <repo_path>/helper_scripts/runner_scripts
 
@@ -152,8 +151,8 @@ python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kerne
 ```
 The above command takes quite some time (30 min - 1hr), all the analysis results will be in the folder: `~/mediatek_kernel/dr_checker_out`, for each entry point a `.json` file will be created which contains all the warnings in JSON format.
 
-#### 3.2.2 Things to note:
-##### 3.2.2.1 Value for option `-g`
+#### 3.2.7 Things to note:
+##### 3.2.7.1 Value for option `-g`
 To provide value for option `-g` you need to know the name of the `-gcc` binary used to compile the kernel.
 An easy way to know this would be to `grep` for `gcc` in `makeout.txt` and you will see compiler commands from which you can know the '-gcc` binary name.
 
@@ -165,20 +164,19 @@ So, the value for `-g` should be `aarch64-linux-android-gcc`.
 
 If the kernel to be built is 32-bit then the binary most likely will be `arm-eabi-gcc`
 
-##### 3.2.2.2 Value for option `-a`
+##### 3.2.7.2 Value for option `-a`
 Depeding on the chipset type, you need to provide corresponding number.
 
-##### 3.2.2.3 Value for option `-o`
+##### 3.2.7.3 Value for option `-o`
 This is the path of the folder provided to the option `O=` for `make` command, while building kernel.
 
 Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
 
+### 3.2 Post-processing DR.CHECKER results
+To your liking, we also provide a script to post-process the results. [Check it out](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/postprocessing.md).
+
 Have fun!!
 
-## 4. Coming Soon
-
-UI to browse through the warnings!!!
-
-## 5. Contact
+## 4. Contact
 Aravind Machiry (machiry@cs.ucsb.edu)
 
