@@ -1,8 +1,8 @@
 DR.CHECKER results post processing
 ===================
 ## Convert to source annotated jsons
-We provide a script that converts the DR.CHECKER jsons into jsons which are more readable. 
-The script to user is `helper_scripts/pp_scripts/pp_jsons.py`
+We provide a script that converts the DR.CHECKER jsons into source annotated jsons. 
+The script to use is `helper_scripts/pp_scripts/pp_jsons.py`
 
 ```
 python pp_jsons.py --help
