@@ -153,10 +153,10 @@ The above command takes quite some time (30 min - 1hr), all the analysis results
 
 #### 3.2.7 Things to note:
 ##### 3.2.7.1 Value for option `-g`
-To provide value for option `-g` you need to know the name of the `-gcc` binary used to compile the kernel.
-An easy way to know this would be to `grep` for `gcc` in `makeout.txt` and you will see compiler commands from which you can know the '-gcc` binary name.
+To provide value for option `-g` you need to know the name of the `*-gcc` binary used to compile the kernel.
+An easy way to know this would be to `grep` for `gcc` in `makeout.txt` and you will see compiler commands from which you can know the `*-gcc` binary name.
 
-For our example above, if your `grep gcc makeout.txt`, you will see lot of lines like below:
+For our example above, if you do `grep gcc makeout.txt` for the example build, you will see lot of lines like below:
 ```
 aarch64-linux-android-gcc -Wp,-MD,fs/jbd2/.transaction.o.d  -nostdinc -isystem ...
 ```
@@ -168,7 +168,7 @@ If the kernel to be built is 32-bit then the binary most likely will be `arm-eab
 Depeding on the chipset type, you need to provide corresponding number.
 
 ##### 3.2.7.3 Value for option `-o`
-This is the path of the folder provided to the option `O=` for `make` command, while building kernel.
+This is the path of the folder provided to the option `O=` for `make` command during kernel build.
 
 Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
 
