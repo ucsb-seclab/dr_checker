@@ -3,14 +3,6 @@ DR.CHECKER : A Soundy Vulnerability Detection Tool for Linux Kernel Drivers
 
 [![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
 
-## Contents
-1. [Setup](#1-setup)
-2. [Build](#2-building)
-3. [Running](#3-running)
-    3.1 [Building Kernel](#31-building-kernel)
-    3.2 [Running DR.CHECKER analysis](#32-running-dr.checker-analysis)
-4. [Contact](#4-contact)
-
 This repo contains all the sources, including setup scripts.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
