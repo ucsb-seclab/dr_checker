@@ -7,7 +7,7 @@ This repo contains all the sources, including setup scripts.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 
-[FAQ](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md).
+## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
 ## 1. Setup
 Our implementation is based on LLVM, specifically LLVM 3.8. We also need tools like `c2xml` to parse headers.
