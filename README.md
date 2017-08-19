@@ -84,7 +84,7 @@ optional arguments:
   -f SOUNDY_ANALYSIS_OUT    Path to the output folder where the soundy analysis output should be stored.
 
 ```
-The script builds, links and runs DR.CHECKER on all the drivers, as such might take considerable time. If you want to run DR.CHECKER manually on individual drivers, refer [standalone](https://github.com/ucsb-seclab/dr_checker/tree/master/docs/standalone.md)
+The script builds, links and runs DR.CHECKER on all the drivers, as such might take **considerable time(45 min-90 min)**. If you want to run DR.CHECKER manually on individual drivers, refer [standalone](https://github.com/ucsb-seclab/dr_checker/tree/master/docs/standalone.md)
 
 The above script performs following tasks in a multiprocesser mode to make use of all CPU cores:
 #### 3.2.1. LLVM Build 
@@ -149,7 +149,7 @@ cd <repo_path>/helper_scripts/runner_scripts
 
 python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kernel/kernel-3.18/makeout.txt -g aarch64-linux-android-gcc -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/dr_checker_out
 ```
-The above command takes quite some time (30 min - 1hr), all the analysis results will be in the folder: `~/mediatek_kernel/dr_checker_out`, for each entry point a `.json` file will be created which contains all the warnings in JSON format.
+The above command takes quite **some time (30 min - 1hr)**, all the analysis results will be in the folder: `~/mediatek_kernel/dr_checker_out`, for each entry point a `.json` file will be created which contains all the warnings in JSON format.
 
 #### 3.2.7 Things to note:
 ##### 3.2.7.1 Value for option `-g`
