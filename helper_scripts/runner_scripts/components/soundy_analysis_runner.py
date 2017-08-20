@@ -123,7 +123,7 @@ def _run_multi_soundy_checker(entry_point_out, opt_bin_path, soundy_pass_so, sou
     for curr_ep in all_lines:
         curr_ep = curr_ep.strip()
         all_p = curr_ep.split(':')
-        if all_p[1] not in processed_func:
+        if all_p[1] not in processed_func and all_p[0].strip() != "DEVSHOW":
             processed_func.append(all_p[1])
             to_run_cmds.append((opt_bin_path, soundy_pass_so, all_p[1], all_p[2],
                                 os.path.join(soundy_analysis_out, all_p[1] + '.json'),
