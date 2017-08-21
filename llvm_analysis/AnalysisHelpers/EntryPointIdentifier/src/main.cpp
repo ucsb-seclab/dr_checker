@@ -253,7 +253,7 @@ void process_v4l2_ioctl_st(GlobalVariable *currGlobal, FILE *outputFile) {
             Value *currFieldVal = actualStType->getOperand(i);
             Function *targetFunction = dyn_cast<Function>(currFieldVal);
             if(targetFunction != nullptr && !targetFunction->isDeclaration()) {
-                fprintf(outputFile, "%s:%s:%u\n", V4L2_IOCTL_FUNC, targetFunction->getName().str().c_str(), i);
+                fprintf(outputFile, "%s:%s\n", V4L2_IOCTL_FUNC, targetFunction->getName().str().c_str());
             }
         }
 
