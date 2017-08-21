@@ -3,6 +3,7 @@ import multiprocessing
 import os
 import time
 import json
+import sys
 
 
 def log_info(*args):
@@ -203,9 +204,19 @@ def process_json((src_json, output_json, ker_src, orig_src, alter_src)):
             fp.close()
 
 
+def usage():
+    log_error("Invalid Usage.")
+    log_error("Run: python ", __file__, "--help", ", to know the correct usage.")
+    sys.exit(-1)
+
+
 def main():
     arg_parser = setup_args()
     parsed_args = arg_parser.parse_args()
+
+    # check usage
+    if parsed_args.dr_jsons is None or parsed_args.output_jsons is None:
+        usage()
 
     kernel_dir = None
     if parsed_args.kernel_src_dir is not None:

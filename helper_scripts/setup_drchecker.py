@@ -5,6 +5,8 @@ This script clones and setups llvm and friends in the provided folder.
 import argparse
 from multiprocessing import cpu_count
 import os
+import sys
+
 
 def log_info(*args):
     log_str = "[*] "
@@ -50,11 +52,19 @@ def setup_args():
     return parser
 
 
+def usage():
+    log_error("Invalid Usage.")
+    log_error("Run: python ", __file__, "--help", ", to know the correct usage.")
+    sys.exit(-1)
+
+
 def main():
     arg_parser = setup_args()
     parsed_args = arg_parser.parse_args()
     # step 1: Setup common dictionary
     reps_to_setup = {'tools': ['clang'], 'projects': ['compiler-rt', 'libcxx', 'libcxxabi', 'openmp']}
+    if parsed_args.output_folder is None:
+        usage()
     sparse_dir = os.path.join(parsed_args.output_folder, "sparse")
     base_output_dir = os.path.join(parsed_args.output_folder, "llvm")
     target_branch = parsed_args.target_branch

@@ -1,6 +1,7 @@
 import argparse
 from components import *
 import time
+import sys
 
 
 def setup_args():
@@ -56,6 +57,12 @@ def get_bin_path(bin_name):
     return out_p.strip()
 
 
+def usage():
+    log_error("Invalid Usage.")
+    log_error("Run: python ", __file__, "--help", ", to know the correct usage.")
+    sys.exit(-1)
+
+
 def main():
     arg_parser = setup_args()
     parsed_args = arg_parser.parse_args()
@@ -64,6 +71,9 @@ def main():
     utils_dir = os.path.join(utils_dir, "../llvm_analysis")
     ana_helpers = os.path.join(utils_dir, "AnalysisHelpers")
     passes_dir = os.path.join(utils_dir, "MainAnalysisPasses/build_dir")
+    # check for correct usage.
+    if parsed_args.llvm_bc_out is None:
+        usage()
     # step 1: Setup common dictionary
     arg_dict['llvm_bc_out'] = parsed_args.llvm_bc_out
     arg_dict['dr_link_bin'] = os.path.join(ana_helpers, "Dr_linker/dr_linker")
