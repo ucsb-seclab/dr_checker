@@ -85,9 +85,9 @@ def main():
     os.system(git_clone_cmd)
 
     for curr_folder in reps_to_setup:
-        dst_folder = os.path.join(base_output_dir, curr_folder)
+        rep_folder = os.path.join(base_output_dir, curr_folder)
         for curr_rep in reps_to_setup[curr_folder]:
-            dst_folder = os.path.join(dst_folder, curr_rep)
+            dst_folder = os.path.join(rep_folder, curr_rep)
             git_clone_cmd = "git clone " + LLVM_GIT_HUB_BASE + str(curr_rep) + " -b " + \
                             str(target_branch) + " " + dst_folder
             log_info("Setting up ", curr_rep, " repo.")
