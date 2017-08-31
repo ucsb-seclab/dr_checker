@@ -49,11 +49,14 @@ To run DR.CHECKER on kernel drivers, we need to first convert them into llvm bit
 First, we need to have a buildable kernel. Which means you should be able to compile the kernel using regular build setup. i.e., `make`.
 We first capture the output of `make` command, from this output we extract the exact compilation command.
 #### 3.1.1 Generating output of `make` (or `makeout.txt`)
+
 Just pass `V=1` and redirect the output to the file.
 Example:
 ```
 make V=1 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
+NOTE: DO NOT USE MULTIPLE PROCESSES i.e., `-j`. Running in multi-processing mode will mess up the output file as multiple process try to write to the output file.
+
 Thats it. DR.CHECKER will take care from here.
 ### 3.2 Running DR.CHECKER analysis
 There are several steps to run DR.CHECKER analysis, all these steps are wrapped in a single script `helper_scripts/runner_scripts/run_all.py`
