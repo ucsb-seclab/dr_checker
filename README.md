@@ -11,7 +11,13 @@ Ubuntu >= 14.04.5 LTS
 
 ## 1. Setup
 Our implementation is based on LLVM, specifically LLVM 3.8. We also need tools like `c2xml` to parse headers.
-We have created a single script, which downloads and builds all the required tools.
+
+First, make sure that you have libxml (required for c2xml):
+```
+sudo apt-get install libxml2-dev
+```
+
+Next, We have created a single script, which downloads and builds all the required tools.
 ```
 cd helper_scripts
 python setup_drchecker.py --help
