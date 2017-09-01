@@ -100,12 +100,12 @@ namespace DRCHECKER {
         return InstructionUtils::escapeJsonString(rso.str());
     }
 
-    DILocation* getRecursiveDILoc(Instruction *currInst, DILocation *corrL, std::set<BasicBlock*> &visitedBBs) {
+    DILocation* getRecursiveDILoc(Instruction *currInst, std::string &funcFileName, std::set<BasicBlock*> &visitedBBs) {
         DILocation *currIL = currInst->getDebugLoc().get();
-        if(corrL == nullptr) {
+        if(funcFileName.length() == 0) {
             return currIL;
         }
-        if(currIL != nullptr && currIL->getFilename().equals(corrL->getFilename())) {
+        if(currIL != nullptr && currIL->getFilename().equals(funcFileName)) {
             return currIL;
         }
 
@@ -116,7 +116,7 @@ namespace DRCHECKER {
         for(auto &iu :currBB->getInstList()) {
             Instruction *currIterI = &iu;
             DILocation *currIteDL = currIterI->getDebugLoc();
-            if(currIteDL != nullptr && currIteDL->getFilename().equals(corrL->getFilename())) {
+            if(currIteDL != nullptr && currIteDL->getFilename().equals(funcFileName)) {
                 return currIteDL;
             }
             if(currIterI == currInst) {
@@ -126,9 +126,10 @@ namespace DRCHECKER {
 
         visitedBBs.insert(currBB);
 
+
         for (auto it = pred_begin(currBB), et = pred_end(currBB); it != et; ++it) {
             BasicBlock* predecessor = *it;
-            DILocation *currBBLoc = getRecursiveDILoc(predecessor->getFirstNonPHIOrDbg(), corrL, visitedBBs);
+            DILocation *currBBLoc = getRecursiveDILoc(predecessor->getTerminator(), funcFileName, visitedBBs);
             if(currBBLoc != nullptr) {
                 return currBBLoc;
             }
@@ -136,24 +137,40 @@ namespace DRCHECKER {
         return nullptr;
     }
 
+    std::string getFunctionFileName(Function *F) {
+        SmallVector<std::pair<unsigned, MDNode *>, 4> MDs;
+        F->getAllMetadata(MDs);
+        for (auto &MD : MDs) {
+            if (MDNode *N = MD.second) {
+                if (auto *subProgram = dyn_cast<DISubprogram>(N)) {
+                    return subProgram->getFilename();
+                }
+            }
+        }
+        return "";
+    }
+
 
     DILocation* InstructionUtils::getCorrectInstrLocation(Instruction *I) {
         DILocation *instrLoc = I->getDebugLoc().get();
-        BasicBlock *firstBB = &(I->getFunction()->getEntryBlock());
-        Instruction *firstInstr = firstBB->getFirstNonPHIOrDbg();
+        //BasicBlock *firstBB = &(I->getFunction()->getEntryBlock());
+        //Instruction *firstInstr = firstBB->getFirstNonPHIOrDbg();
 
-        DILocation *firstIL = firstInstr->getDebugLoc().get();
+        //DILocation *firstIL = firstInstr->getDebugLoc().get();
         std::set<BasicBlock*> visitedBBs;
+        std::string funcFileName = getFunctionFileName(I->getFunction());
+
 
         if(instrLoc != nullptr && instrLoc->getFilename().endswith(".c")) {
             return instrLoc;
         }
 
-        if(instrLoc == nullptr || (firstIL != nullptr && !instrLoc->getFilename().equals(firstIL->getFilename()))) {
+        if(instrLoc == nullptr || (funcFileName.length() > 0  && !instrLoc->getFilename().equals(funcFileName))) {
             // OK, the instruction is from the inlined function.
             visitedBBs.clear();
-            DILocation *actualLoc = getRecursiveDILoc(I, firstIL, visitedBBs);
+            DILocation *actualLoc = getRecursiveDILoc(I, funcFileName, visitedBBs);
             if(actualLoc != nullptr) {
+
                 return actualLoc;
             }
         }

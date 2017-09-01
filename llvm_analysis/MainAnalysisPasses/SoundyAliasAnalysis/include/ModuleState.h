@@ -42,7 +42,8 @@ namespace DRCHECKER {
                 O << "{\"instr\":\"";
                 //currCallSite->print(O);
                 //currCallSite->print(O);
-                DILocation *instrLoc = currCallSite->getDebugLoc().get();
+                //DILocation *instrLoc = currCallSite->getDebugLoc().get();
+                DILocation *instrLoc = InstructionUtils::getCorrectInstrLocation(currCallSite);
                 O << InstructionUtils::escapeValueString(currCallSite) << "\",";
                 O << "\"lineno\":";
                 if (instrLoc != nullptr) {
