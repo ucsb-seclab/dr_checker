@@ -117,4 +117,63 @@ namespace DRCHECKER {
         }
         O << "\n}";
     }
+
+    void BugDetectorDriver::printWarningsByInstr(GlobalState &targetState, llvm::raw_ostream& O) {
+        O << "{\"num_instructions\":";
+        if(targetState.warningsByInstr.size() == 0) {
+            O << "0";
+            //O << "No Warnings. Everything looks good\n";
+        } else {
+            O << targetState.warningsByInstr.size() << ",\n";
+            bool addout_comma = false;
+            O << "\"all_instrs\":[\n";
+            for (auto warn_iter = targetState.warningsByInstr.begin(); warn_iter != targetState.warningsByInstr.end();
+                 warn_iter++) {
+                bool addin_comma = false;
+                if(addout_comma) {
+                    O << ",\n";
+                }
+                O << "{";
+                Instruction *currInstr = warn_iter->first;
+                std::set<VulnerabilityWarning *> *allWarnings = warn_iter->second;
+                O << "\"num_warnings\":" << allWarnings->size() << ",\n";
+
+                O << "\"at\":\"";
+                O << InstructionUtils::escapeValueString(currInstr) << "\",";
+                O << "\"at_line\":";
+                DILocation *instrLoc = nullptr;
+                //instrLoc = this->target_instr->getDebugLoc().get();
+                instrLoc = InstructionUtils::getCorrectInstrLocation(currInstr);
+                if(instrLoc != nullptr) {
+                    //O << ", src line:" << instrLoc->getLine() << " file:" << instrLoc->getFilename();
+                    O << instrLoc->getLine() << ",\"at_file\":\"" << InstructionUtils::escapeJsonString(instrLoc->getFilename()) << "\",";
+
+                } else {
+                    //O << ", No line";
+                    O << "-1,";
+                }
+                O << "\"at_func\":\"" << InstructionUtils::escapeJsonString(currInstr->getFunction()->getName()) << "\",";
+
+                //O << "Found:" << allWarnings->size() << " warnings.\n";
+                long currWarningNo = 1;
+                O << "\"warnings\":[\n";
+                for (VulnerabilityWarning *currWarning:*(allWarnings)) {
+                    if(addin_comma) {
+                        O << ",\n";
+                    }
+                    O << "{";
+                    O << "\"warn_no\":" << currWarningNo << ",";
+                    currWarning->printWarning(O);
+                    currWarningNo++;
+                    addin_comma = true;
+                    O << "}";
+                }
+                O << "\n]";
+                addout_comma = true;
+                O << "}";
+            }
+            O << "]\n";
+        }
+        O << "\n}";
+    }
 }
