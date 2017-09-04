@@ -248,6 +248,7 @@ namespace DRCHECKER {
                             dbgs() << "[+] Writing JSON output :\n";
                             dbgs() << "[+] JSON START:\n\n";
                             BugDetectorDriver::printAllWarnings(currState, dbgs());
+                            BugDetectorDriver::printWarningsByInstr(currState, dbgs());
                             dbgs() << "\n\n[+] JSON END\n";
                         } else {
                             std::error_code res_code;
@@ -255,6 +256,17 @@ namespace DRCHECKER {
                             llvm::raw_fd_ostream op_stream(outputFile, res_code, llvm::sys::fs::F_Text);
                             BugDetectorDriver::printAllWarnings(currState, op_stream);
                             op_stream.close();
+
+                            dbgs() << "[+] Return message from file write:" << res_code.message() << "\n";
+
+                            std::string instrWarningsFile(outputFile);
+                            instrWarningsFile.append(".instr_warngs.json");
+
+                            dbgs() << "[+] Writing Instr output to:" << instrWarningsFile << "\n";
+                            llvm::raw_fd_ostream instr_op_stream(instrWarningsFile, res_code, llvm::sys::fs::F_Text);
+                            BugDetectorDriver::printWarningsByInstr(currState, op_stream);
+                            instr_op_stream.close();
+
                             dbgs() << "[+] Return message from file write:" << res_code.message() << "\n";
                         }
 

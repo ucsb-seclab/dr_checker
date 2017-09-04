@@ -71,6 +71,9 @@ namespace DRCHECKER {
 
         // map containing analysis context to corresponding vulnerability warnings.
         std::map<AnalysisContext*, std::set<VulnerabilityWarning*>*> allVulnWarnings;
+
+        // map containing vulnerability warnings w.r.t instruction.
+        std::map<Instruction*, std::set<VulnerabilityWarning*>*> warningsByInstr;
         // set containing all analysis contexts that were analyzed using this global state
         std::set<AnalysisContext*> availableAnalysisContexts;
 
@@ -530,6 +533,26 @@ namespace DRCHECKER {
         // Adding vulnerability warning
 
         /***
+         * Add the provided vulnerability warning to the current state indexed by instruction.
+         * @param currWarning Vulnerability warning that needs to be added.
+         */
+        void addVulnerabilityWarningByInstr(VulnerabilityWarning *currWarning) {
+            Instruction *targetInstr = currWarning->target_instr;
+            std::set<VulnerabilityWarning*> *warningList = nullptr;
+            if(warningsByInstr.find(targetInstr) == warningsByInstr.end()) {
+                warningsByInstr[targetInstr] = new std::set<VulnerabilityWarning*>();
+            }
+            warningList = warningsByInstr[targetInstr];
+
+            for(auto a:*warningList) {
+                if(a->isSameVulWarning(currWarning)) {
+                    return;
+                }
+            }
+            warningList->insert(currWarning);
+        }
+
+        /***
          * Add the provided vulnerability warning to the current state.
          * @param currWarning Vulnerability warning that needs to be added.
          */
@@ -542,6 +565,8 @@ namespace DRCHECKER {
                 allVulnWarnings[currContext] = new std::set<VulnerabilityWarning*>();
             }
             allVulnWarnings[currContext]->insert(currWarning);
+
+            this->addVulnerabilityWarningByInstr(currWarning);
 
         }
     };

@@ -61,8 +61,16 @@ namespace DRCHECKER {
         /***
          * Print all the warnings from the provided global state.
          * @param targetState State that contains all the warnings.
+         * @param O output stream to which the warnings should be written to
          */
         static void printAllWarnings(GlobalState &targetState, llvm::raw_ostream& O);
+
+        /***
+         * Print all the warnings by indexed by instruction.
+         * @param targetState State that contains all the warnings.
+         * @param O output stream to which the warnings should be written to
+         */
+        static void printWarningsByInstr(GlobalState &targetState, llvm::raw_ostream& O);
     };
 }
 
