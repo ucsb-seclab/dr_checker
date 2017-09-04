@@ -154,8 +154,6 @@ namespace DRCHECKER {
                 }
                 O << "\"at_func\":\"" << InstructionUtils::escapeJsonString(currInstr->getFunction()->getName()) << "\",";
 
-                O << ",";
-
                 //O << "Found:" << allWarnings->size() << " warnings.\n";
                 long currWarningNo = 1;
                 O << "\"warnings\":[\n";

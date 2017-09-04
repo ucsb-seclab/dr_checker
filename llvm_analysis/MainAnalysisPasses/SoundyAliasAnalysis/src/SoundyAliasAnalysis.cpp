@@ -264,7 +264,7 @@ namespace DRCHECKER {
 
                             dbgs() << "[+] Writing Instr output to:" << instrWarningsFile << "\n";
                             llvm::raw_fd_ostream instr_op_stream(instrWarningsFile, res_code, llvm::sys::fs::F_Text);
-                            BugDetectorDriver::printWarningsByInstr(currState, op_stream);
+                            BugDetectorDriver::printWarningsByInstr(currState, instr_op_stream);
                             instr_op_stream.close();
 
                             dbgs() << "[+] Return message from file write:" << res_code.message() << "\n";
