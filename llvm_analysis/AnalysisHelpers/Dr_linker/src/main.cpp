@@ -37,6 +37,9 @@ public:
         definedFunctions.insert(definedFunctions.end(), defined_functions.begin(), defined_functions.end());
         declaredFunctions.clear();
         declaredFunctions.insert(declaredFunctions.end(), declared_functions.begin(), declared_functions.end());
+
+	// Sort definedFunctions vector to accelerate search
+        std::sort(definedFunctions.begin(), definedFunctions.end());
     }
 
     bool has_function(const char *to_check_function) {
@@ -44,7 +47,15 @@ public:
         return has_function(curr_func);
     }
     bool has_function(std::string &to_check_function) {
-        return std::find(definedFunctions.begin(), definedFunctions.end(), to_check_function) != definedFunctions.end();
+        std::vector<string>::iterator low;
+
+        low = std::lower_bound(definedFunctions.begin(), definedFunctions.end(), to_check_function);
+        if ((low != definedFunctions.end()) &&
+            ((*low).compare(to_check_function) == 0)) {
+            return true;
+        }
+
+        return false;
     }
 
     bool isNeeded(BitCodeFunctions *dstBCFile) {
@@ -1520,3 +1531,4 @@ int main(int argc, char *argv[]) {
         }
     }
 }
+
