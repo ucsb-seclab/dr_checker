@@ -109,7 +109,7 @@ def _run_soundy_checker(combined_arg):
 
     ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -dr_checker -toCheckFunction=\"' +
                         str(func_name) + '\" -functionType=\"' + ep_type
-                        + '\" -outputFile=\"' + output_json_file + '\" ' +
+                        + '\" -skipInit=1 -outputFile=\"' + output_json_file + '\" ' +
                         bc_file_name + ' >> ' + output_total_file + ' 2>&1')
     return ret_val, func_name
 
