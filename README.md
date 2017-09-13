@@ -6,7 +6,9 @@ DR.CHECKER : A Soundy Vulnerability Detection Tool for Linux Kernel Drivers
 This repo contains all the sources, including setup scripts.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
-
+### Announcements
+* **13 Sept 2017**: We have started to work on a set of heuristics and precision improvements to reduce false-positives. Expect an update by 22 Sept 2017.
+* **13 Sept 2017**: [Sebastiano](https://github.com/Phat3) will be working on the simple web-based UI to view warnings.
 ## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
 ## 1. Setup
@@ -182,4 +184,3 @@ Have fun!!
 
 ## 4. Contact
 Aravind Machiry (machiry@cs.ucsb.edu)
-
