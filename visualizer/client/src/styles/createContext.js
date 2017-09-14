@@ -16,6 +16,13 @@ const theme = createMuiTheme({
     secondary: secondaryColor,
     type: 'dark',
   },
+  overrides: {
+    MuiDivider: {
+      default: {
+        backgroundColor: primaryColor[500],
+      },
+    },
+  },
 });
 
 // Configure JSS

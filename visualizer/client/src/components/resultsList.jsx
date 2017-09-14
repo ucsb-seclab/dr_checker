@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import { withStyles } from 'material-ui/styles';
-import withRoot from '../components/withRoot';
+import ResultItem from './resultItem.jsx';
 
 const styles = theme => ({
   paper: {
@@ -26,10 +26,13 @@ class ResultsList extends React.PureComponent {
 
   render() {
     const classes = this.props.classes;
-
     return (
       <div>
-        <Paper className={classes.paper}>Hello World</Paper>
+        <Paper className={classes.paper}>
+          <ResultItem functionName="JSON fun 1" />
+          <ResultItem functionName="JSON fun 2" />
+          <ResultItem functionName="JSON fun 3" />
+        </Paper>
       </div>
     );
   }
@@ -39,4 +42,4 @@ ResultsList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRoot(withStyles(styles)(ResultsList));
+export default withStyles(styles)(ResultsList);
