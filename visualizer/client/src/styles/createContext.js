@@ -22,7 +22,7 @@ const theme = createMuiTheme({
 const jss = create(preset());
 jss.options.createGenerateClassName = createGenerateClassName;
 
-export const sheetsManager: Map<*, *> = new Map(); 
+export const sheetsManager = new Map();
 
 function createContext() {
   return {
@@ -35,4 +35,4 @@ function createContext() {
   };
 }
 
-export default createContext
+export default createContext;
