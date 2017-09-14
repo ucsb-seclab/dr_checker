@@ -13,6 +13,7 @@
     "react-dom": "latest",
     "react-jss": "latest",
     "react-scripts": "latest",
+    "react-syntax-highlighter": "^5.7.0",
     "recompose": "latest"
   },
   "scripts": {

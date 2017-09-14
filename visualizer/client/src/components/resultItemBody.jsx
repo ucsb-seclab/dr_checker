@@ -5,6 +5,7 @@ import { CardContent } from 'material-ui/Card';
 import Collapse from 'material-ui/transitions/Collapse';
 import Divider from 'material-ui/Divider';
 import SectionTitle from './sectionTitle.jsx';
+import SourcecodeSection from './sourcecodeSection.jsx';
 
 /**
  * This class represent the body of the resultItem.
@@ -19,6 +20,7 @@ function ResultItemBody(props) {
       <CardContent>
         <SectionTitle title="Summary" />
         <SectionTitle title="Source Code" />
+        <SourcecodeSection />
       </CardContent>
     </Collapse>
   );
