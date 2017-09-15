@@ -23,36 +23,66 @@ const styles = theme => ({
  * the highlighted source code, the summary of the analysis relative to this
  * this function, etc...
  */
-function ResultItemBody(props) {
-  const classes = props.classes;
-  return (
-    <Collapse in={props.expanded} transitionDuration="auto" unmountOnExit>
-      <Divider />
-      <CardContent>
-        <Grid container>
-          <Grid item xs={12}>
-            <SectionTitle title="Summary" />
+class ResultItemBody extends React.PureComponent {
+  constructor() {
+    super();
+    this.state = {
+      data: [
+        { id: 1, name: 'warning 1', color: 'red', lineNo: 3, info: 'bla bla bla' },
+        { id: 2, name: 'warning 2', color: 'green', lineNo: 5, info: 'bla bla bla 2' },
+        { id: 3, name: 'warning 3', color: 'yellow', lineNo: 7, info: 'bla bla bla 3' },
+        { id: 4, name: 'warning 4', color: 'orange', lineNo: 10, info: 'bla bla bla 4' },
+      ],
+      selectedWarnings: [],
+      highlightedLines: [],
+    };
+  }
+
+  handleWarningsSelection = (selectedIds) => {
+    const toHighlight = this.state.data
+      .filter(v => selectedIds.indexOf(v.id) !== -1)
+      .map(n => ({ color: n.color, lineNo: n.lineNo }));
+    this.setState({
+      selectedWarnings: selectedIds,
+      highlightedLines: toHighlight,
+    });
+  }
+
+  render() {
+    const classes = this.props.classes;
+    return (
+      <Collapse in={this.props.expanded} transitionDuration="auto" unmountOnExit>
+        <Divider />
+        <CardContent>
+          <Grid container>
+            <Grid item xs={12}>
+              <SectionTitle title="Summary" />
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item xs={2}>
-            <Typography type="title">
+          <Grid container>
+            <Grid item xs={2}>
+              <Typography type="title">
                     Warnings
-            </Typography>
+              </Typography>
+            </Grid>
+            <Grid item xs={10} className={classes.gridTableSummary}>
+              <SummarySection
+                data={this.state.data}
+                selected={this.state.selectedWarnings}
+                handleSelection={this.handleWarningsSelection}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={10} className={classes.gridTableSummary}>
-            <SummarySection />
+          <Grid container>
+            <Grid item xs={12}>
+              <SectionTitle title="Source code" />
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item xs={12}>
-            <SectionTitle title="Source code" />
-          </Grid>
-        </Grid>
-        <SourcecodeSection />
-      </CardContent>
-    </Collapse>
-  );
+          <SourcecodeSection highlightedLines={this.state.highlightedLines} />
+        </CardContent>
+      </Collapse>
+    );
+  }
 }
 
 ResultItemBody.propTypes = {

@@ -23,7 +23,7 @@ class ResultItem extends React.Component {
     super();
     // at the begining we want all the cards to be NOT expanded
     this.state = {
-      expanded: true,
+      expanded: false,
     };
   }
 

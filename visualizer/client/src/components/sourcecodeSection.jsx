@@ -28,10 +28,12 @@ class SourcecodeSection extends React.PureComponent {
    * color of that warning as a background color of the line
    */
   highlightLine = (num) => {
-    if (num === 4) {
-      return { backgroundColor: 'green' };
+    const lineProp = this.props.highlightedLines.filter(n => n.lineNo === num);
+    let background = 'transparent';
+    if (lineProp.length !== 0) {
+      background = lineProp[0].color;
     }
-    return { backgroundColor: 'none' };
+    return { backgroundColor: background };
   }
 
   render() {
@@ -70,6 +72,7 @@ int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
 
 SourcecodeSection.propTypes = {
   classes: PropTypes.object.isRequired,
+  highlightedLines: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default withStyles(styles)(SourcecodeSection);
