@@ -10,6 +10,7 @@ const styles = theme => ({
     marginLeft: '40%',
     marginRight: '40%',
     fontFamily: 'monospace',
+    marginBottom: 10,
   },
 });
 

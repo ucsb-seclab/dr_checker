@@ -22,6 +22,11 @@ const theme = createMuiTheme({
         backgroundColor: primaryColor[500],
       },
     },
+    MuiTableCell: {
+      checkbox: {
+        width: 10,
+      },
+    },
   },
 });
 
