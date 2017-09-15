@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <dirent.h>
 
+#define SIZEOF_ARRAY(a) (sizeof(a) / sizeof(a[0]))
+
 using namespace std;
 using namespace llvm;
 #define DR_LINK_OUT "llvm_link_out"
@@ -1327,19 +1329,19 @@ int is_interesting_folder(char *curr_folder, unsigned long arch_no) {
     switch(arch_no) {
         case 1:
             inter_folders = mediatek_driver_folder;
-            array_size = sizeof(mediatek_driver_folder);
+            array_size = SIZEOF_ARRAY(mediatek_driver_folder);
             break;
         case 2:
             inter_folders = qualcomm_driver_folders;
-            array_size = sizeof(qualcomm_driver_folders);
+            array_size = SIZEOF_ARRAY(qualcomm_driver_folders);
             break;
         case 3:
             inter_folders = huawei_driver_folders;
-            array_size = sizeof(huawei_driver_folders);
+            array_size = SIZEOF_ARRAY(huawei_driver_folders);
             break;
         case 4:
             inter_folders = samsung_driver_folders;
-            array_size = sizeof(samsung_driver_folders);
+            array_size = SIZEOF_ARRAY(samsung_driver_folders);
             break;
         default:
             std::cerr << "Invalid arch number, Valid arch numbers are: 1(mediatek)|2(qualcomm)|3(huawei)|4(samsung)\n";
