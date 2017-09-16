@@ -10,6 +10,7 @@ import { withStyles } from 'material-ui/styles';
 import SectionTitle from './sectionTitle.jsx';
 import SourcecodeSection from './sourcecodeSection.jsx';
 import SummarySection from './summarySection.jsx';
+import FullScreenSourceCode from './fullScreenSourcecodeDialog.jsx';
 
 const styles = theme => ({
   gridTableSummary: {
@@ -27,17 +28,25 @@ class ResultItemBody extends React.PureComponent {
   constructor() {
     super();
     this.state = {
+      // data retrieved from the server representing the details of the single result
       data: [
         { id: 1, name: 'warning 1', color: 'red', lineNo: 3, info: 'bla bla bla' },
         { id: 2, name: 'warning 2', color: 'green', lineNo: 5, info: 'bla bla bla 2' },
         { id: 3, name: 'warning 3', color: 'yellow', lineNo: 7, info: 'bla bla bla 3' },
         { id: 4, name: 'warning 4', color: 'orange', lineNo: 10, info: 'bla bla bla 4' },
       ],
+      // warnings selected by the users that needs to be highlighted
       selectedWarnings: [],
+      // line numbers to highlight
       highlightedLines: [],
+      // toggle fullscreen visualization for the sourcecode
+      showFullScreen: false,
     };
   }
 
+  /**
+   * Extacts which warnings nbeeds to be hioghlighted and their correscponfding line
+   */
   handleWarningsSelection = (selectedIds) => {
     const toHighlight = this.state.data
       .filter(v => selectedIds.indexOf(v.id) !== -1)
@@ -78,7 +87,10 @@ class ResultItemBody extends React.PureComponent {
               <SectionTitle title="Source code" />
             </Grid>
           </Grid>
-          <SourcecodeSection highlightedLines={this.state.highlightedLines} />
+          <FullScreenSourceCode title={this.props.filename}>
+            <SourcecodeSection highlightedLines={this.state.highlightedLines} />
+          </FullScreenSourceCode>
+          <SourcecodeSection highlightedLines={this.state.highlightedLines} overflowHidden />
         </CardContent>
       </Collapse>
     );
@@ -86,8 +98,11 @@ class ResultItemBody extends React.PureComponent {
 }
 
 ResultItemBody.propTypes = {
+  // toggle card collapse
   expanded: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
+  // name of the file related to the result
+  filename: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(ResultItemBody);

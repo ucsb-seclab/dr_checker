@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Checkbox from 'material-ui/Checkbox';
 import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
 import SummaryInfo from './summaryInfo.jsx';
 
@@ -112,7 +111,7 @@ class SummarySection extends React.PureComponent {
                 >
                   <TableCell checkbox>
                     <Checkbox
-                      checked={isSelected} 
+                      checked={isSelected}
                       onClick={event => this.handleSelectClick(event, n.id)}
                     />
                   </TableCell>

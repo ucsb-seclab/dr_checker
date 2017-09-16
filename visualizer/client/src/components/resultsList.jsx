@@ -20,7 +20,12 @@ class ResultsList extends React.PureComponent {
   constructor() {
     super();
     this.state = {
-      value: null,
+      // List of results returned by the server
+      data: [
+        { name: 'JSON fun 1' },
+        { name: 'JSON fun 2' },
+        { name: 'JSON fun 3' },
+      ],
     };
   }
 
@@ -29,9 +34,7 @@ class ResultsList extends React.PureComponent {
     return (
       <div>
         <Paper className={classes.paper}>
-          <ResultItem functionName="JSON fun 1" />
-          <ResultItem functionName="JSON fun 2" />
-          <ResultItem functionName="JSON fun 3" />
+          {this.state.data.map(n => (<ResultItem functionName={n.name} />))}
         </Paper>
       </div>
     );

@@ -7,7 +7,6 @@ import Typography from 'material-ui/Typography';
 function SummaryInfo(props) {
   const { ...other } = props;
   return (
-    
     <Dialog onRequestClose={props.onRequestClose} {...other}>
       <DialogTitle>{props.title}</DialogTitle>
       <div>
