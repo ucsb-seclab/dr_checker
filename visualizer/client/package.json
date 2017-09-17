@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.16.2",
     "classnames": "^2.2.5",
     "jss": "latest",
     "jss-preset-default": "latest",
@@ -11,6 +12,7 @@
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-global-configuration": "^1.2.0",
     "react-jss": "latest",
     "react-scripts": "latest",
     "react-syntax-highlighter": "^5.7.0",

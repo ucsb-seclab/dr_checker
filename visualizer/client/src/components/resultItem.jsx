@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import config from 'react-global-configuration';
 import Card from 'material-ui/Card';
 import { withStyles } from 'material-ui/styles';
 import ResultItemHeader from './resultItemHeader.jsx';
@@ -23,7 +25,10 @@ class ResultItem extends React.Component {
     super();
     // at the begining we want all the cards to be NOT expanded
     this.state = {
-      expanded: true,
+      // indicates if the result card is expanded or not
+      expanded: false,
+      // lsit of warnings related to the analysis
+      warnings: [],
     };
   }
 
@@ -33,6 +38,21 @@ class ResultItem extends React.Component {
    */
   handleExpandClick = () => {
     this.setState({ expanded: !this.state.expanded });
+    this.fetchWarnings();
+  }
+
+  /**
+   * Get the warnings related to this analysis 
+   */
+  fetchWarnings = () => {
+    axios.get(`${config.get('endpoint')}/result/${this.props.functionName}`).then((response) => {
+      if (response.data.success) {
+        const parsedData = JSON.parse(response.data.data);
+        this.setState({ warnings: parsedData });
+      } else {
+        // TODO : Display errors
+      }
+    });
   }
 
   render() {
@@ -44,10 +64,12 @@ class ResultItem extends React.Component {
           expanded={this.state.expanded}
           handleExpandClick={this.handleExpandClick}
         />
+        {/*
         <ResultItemBody
           expanded={this.state.expanded}
           filename={this.props.functionName}
         />
+        */}
       </Card>
     );
   }

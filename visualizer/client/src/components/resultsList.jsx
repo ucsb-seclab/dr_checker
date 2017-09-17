@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import { withStyles } from 'material-ui/styles';
+import axios from 'axios';
+import config from 'react-global-configuration';
 import ResultItem from './resultItem.jsx';
 
 const styles = theme => ({
@@ -21,12 +23,21 @@ class ResultsList extends React.PureComponent {
     super();
     this.state = {
       // List of results returned by the server
-      data: [
-        { name: 'JSON fun 1' },
-        { name: 'JSON fun 2' },
-        { name: 'JSON fun 3' },
-      ],
+      data: [],
     };
+  }
+
+  /**
+   * Fetch resultsd list from server when the component is mounted
+   */
+  componentDidMount = () => {
+    axios.get(`${config.get('endpoint')}/results`).then((response) => {
+      if (response.data.success) {
+        this.setState({ data: response.data.data });
+      } else {
+        // TODO : Display errors
+      }
+    });
   }
 
   render() {
@@ -34,7 +45,7 @@ class ResultsList extends React.PureComponent {
     return (
       <div>
         <Paper className={classes.paper}>
-          {this.state.data.map(n => (<ResultItem functionName={n.name} />))}
+          {this.state.data.map(n => (<ResultItem key={n.name} functionName={n.name} />))}
         </Paper>
       </div>
     );
