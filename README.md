@@ -27,7 +27,7 @@ usage: setup_drchecker.py [-h] [-b TARGET_BRANCH] [-o OUTPUT_FOLDER]
 
 optional arguments:
   -h, --help        show this help message and exit
-  -b TARGET_BRANCH  Branch (i.e version) of the LLVM to setup. Default:
+  -b TARGET_BRANCH  Branch (i.e. version) of the LLVM to setup. Default:
                     release_38 e.g., release_38
   -o OUTPUT_FOLDER  Folder where everything needs to be setup.
 
@@ -59,7 +59,7 @@ make V=1 O=out ARCH=arm64 > makeout.txt 2>&1
 ```
 NOTE: DO NOT USE MULTIPLE PROCESSES i.e., `-j`. Running in multi-processing mode will mess up the output file as multiple process try to write to the output file.
 
-Thats it. DR.CHECKER will take care from here.
+That's it. DR.CHECKER will take care from here.
 ### 3.2 Running DR.CHECKER analysis
 There are several steps to run DR.CHECKER analysis, all these steps are wrapped in a single script `helper_scripts/runner_scripts/run_all.py`
 How to run:
@@ -91,7 +91,7 @@ optional arguments:
 ```
 The script builds, links and runs DR.CHECKER on all the drivers, as such might take **considerable time(45 min-90 min)**. If you want to run DR.CHECKER manually on individual drivers, refer [standalone](https://github.com/ucsb-seclab/dr_checker/tree/master/docs/standalone.md)
 
-The above script performs following tasks in a multiprocesser mode to make use of all CPU cores:
+The above script performs following tasks in a multiprocessor mode to make use of all CPU cores:
 #### 3.2.1. LLVM Build 
 * Enabled by default.
 
@@ -126,7 +126,7 @@ To skip: `-ske`
 #### 3.2.5.Run Soundy Analysis on all the identified entry points.
 * Enabled by default.
 
-This step will run DR.CHEKER on all the entry points in the file `entry_point_out.txt`. The output for each entry point will be stored in the folder provided for option `-f`.
+This step will run DR.CHECKER on all the entry points in the file `entry_point_out.txt`. The output for each entry point will be stored in the folder provided for option `-f`.
 
 To skip: `-ski`
 #### 3.2.6 Example:
