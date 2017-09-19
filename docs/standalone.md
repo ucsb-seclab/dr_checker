@@ -4,7 +4,7 @@ Instead of running DR.CHECKER on the drivers, You can just run DR.CHECKER on ind
 First, While running `run_all.py`, pass `-ski` so that it does not run DR.CHECKER on all the drivers.
 
 Next, Refer the entry point configuration i.e., `entry_point_out.txt`, and identify the entry point you want to run DR.CHECKER on.
-Consider that you have following entried in your `entry_point_out.txt`:
+Consider that you have following entries in your `entry_point_out.txt`:
 ```
 FileRead:hidraw_read:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc
 FileWrite:hidraw_write:/home/drchecker/33.2.A.3.123/llvm_bc_out/drivers/hid/llvm_link_final/final_to_check.bc

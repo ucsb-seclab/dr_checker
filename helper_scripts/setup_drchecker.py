@@ -44,7 +44,7 @@ def setup_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-b', action='store', dest='target_branch', default='release_38',
-                        help='Branch (i.e version) of the LLVM to setup. Default: release_38 e.g., release_38')
+                        help='Branch (i.e. version) of the LLVM to setup. Default: release_38 e.g., release_38')
 
     parser.add_argument('-o', action='store', dest='output_folder',
                         help='Folder where everything needs to be setup.')
