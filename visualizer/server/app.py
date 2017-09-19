@@ -5,7 +5,7 @@ List of RESTful route
 import os
 from datetime import timedelta
 from functools import update_wrapper
-from flask import Flask, jsonify, make_response, request, current_app
+from flask import Flask, jsonify, make_response, request, current_app, json
 
 
 app = Flask(__name__) # pylint: disable=invalid-name
@@ -52,6 +52,7 @@ def crossdomain(origin=None, methods=None, headers=None,
         return update_wrapper(wrapped_function, f)
     return decorator
 
+
 @app.route("/results", methods=["GET"])
 @crossdomain(origin='*')
 def get_results():
@@ -70,6 +71,7 @@ def get_results():
         response["data"].append({"name" : os.path.splitext(filename)[0]})
     return jsonify(response)
 
+
 @app.route("/result/<string:filename>")
 @crossdomain(origin='*')
 def get_result(filename):
@@ -79,7 +81,6 @@ def get_result(filename):
     """
     response = {"success": True, "data" : {}}
     analysis_content_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json')
-    print analysis_content_file_path
     # returns error if filename does not exist
     if not os.path.exists(analysis_content_file_path):
         response["success"] = False
@@ -89,8 +90,40 @@ def get_result(filename):
     content = ""
     with open(analysis_content_file_path, "r") as result_file:
         content = result_file.read()
-    response["data"] = content
+    json_data = json.loads(content)
+    # group result by source code (BAD CODE)
+    results = []
+    for context in json_data["all_contexts"]:
+        results_warnings = {}
+        for warning in context["warnings"]:
+            filename = warning["warn_data"]["at_file"]
+            # remove junk
+            if "/home/machiry/workdir/crowell_stuff/huawei_mounted/Code_Opensource/" in filename:
+                filename = filename.replace("/home/machiry/workdir/crowell_stuff/huawei_mounted/Code_Opensource/", '')
+            if results_warnings.has_key(filename):
+                results_warnings[filename].append(warning)
+            else:
+                results_warnings[filename] = [warning]
+        results.append(results_warnings)
+    response["data"] = results
     return jsonify(response)
+
+
+@app.route("/sourcecode/<string:path>")
+@crossdomain(origin='*')
+def get_sourcecode(path):
+    """
+    This route rreturns the sourcecode of the requested file if it exists
+    """
+    path = path.replace('*', '/')
+    local_path_to_sourcecode = os.path.join(app.config["SOURCECODE_DIR"], path)
+    print local_path_to_sourcecode
+    resp = "No such file..."
+    if(os.path.exists(local_path_to_sourcecode)):
+        with open(local_path_to_sourcecode) as sourcecode_file:
+            resp = sourcecode_file.read()
+    return resp
+
 
 if __name__ == "__main__":
     app.run()

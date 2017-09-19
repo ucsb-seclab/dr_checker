@@ -32,7 +32,7 @@ class SummarySection extends React.PureComponent {
   handleSelectAllClick = (event, checked) => {
     let selected = [];
     if (checked) {
-      selected = this.props.data.map(n => n.id);
+      selected = [...Array(this.props.data.length).keys()];
     }
     this.props.handleSelection(selected);
   }
@@ -94,33 +94,38 @@ class SummarySection extends React.PureComponent {
                 />
               </TableCell>
               <TableCell disablePadding>Warning Type</TableCell>
+              <TableCell disablePadding>At Function</TableCell>
+              <TableCell numeric>Line No.</TableCell>
               <TableCell numeric>Actions</TableCell>
               <TableCell numeric>Color</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.props.data.map((n) => {
-              const isSelected = this.isSelected(n.id);
+            {this.props.data.map((n, idx) => {
+              const isSelected = this.isSelected(idx);
               return (
                 <TableRow
                   role="checkbox"
                   aria-checked={isSelected}
                   tabIndex={-1}
-                  key={n.id}
+                  key={idx}
                   selected={isSelected}
                 >
                   <TableCell checkbox>
                     <Checkbox
                       checked={isSelected}
-                      onClick={event => this.handleSelectClick(event, n.id)}
+                      onClick={event => this.handleSelectClick(event, idx)}
                     />
                   </TableCell>
-                  <TableCell disablePadding>{n.name}</TableCell>
+                  <TableCell disablePadding>{n.warn_data.warn_str}</TableCell>
+                  <TableCell disablePadding>{n.warn_data.at_func}</TableCell>
+                  <TableCell numeric>{n.warn_data.at_line}</TableCell>
                   <TableCell numeric>
                     <Icon onClick={() => this.openInfoDialog(n.name, n.info)}>search</Icon>
                   </TableCell>
                   <TableCell numeric>
-                    <Icon style={{ color: n.color }}>label</Icon>
+                    {/* The color of the legend item is generated at random */}
+                    <Icon style={{ color: this.props.legendColors[idx] }}>label</Icon>
                   </TableCell>
                 </TableRow>
               );
@@ -142,6 +147,7 @@ SummarySection.propTypes = {
   selected: PropTypes.arrayOf(PropTypes.number).isRequired,
   handleSelection: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  legendColors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default withStyles(styles)(SummarySection);

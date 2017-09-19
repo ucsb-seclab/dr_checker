@@ -7,8 +7,6 @@ const styles = theme => ({
   title: {
     color: theme.palette.common.fullWhite,
     borderBottom: `1px solid ${theme.palette.secondary[300]}`,
-    marginLeft: '40%',
-    marginRight: '40%',
     fontFamily: 'monospace',
     marginBottom: 10,
   },

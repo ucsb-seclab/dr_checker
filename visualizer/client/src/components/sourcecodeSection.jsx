@@ -28,10 +28,12 @@ class SourcecodeSection extends React.PureComponent {
   highlightLine = (num) => {
     const lineProp = this.props.highlightedLines.filter(n => n.lineNo === num);
     let background = 'transparent';
+    let textColor = 'inherit';
     if (lineProp.length !== 0) {
       background = lineProp[0].color;
+      textColor = 'white';
     }
-    return { backgroundColor: background };
+    return { backgroundColor: background, color: textColor };
   }
 
   render() {
@@ -50,101 +52,7 @@ class SourcecodeSection extends React.PureComponent {
         lineStyle={this.highlightLine}
         lineNumberStyle={this.highlightLine}
       >
-        {
-          `#include <sanitizer/dfsan_interface.h>
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-#include <assert.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-
-int global_i1;  // global
-
-int foo(int foo_arg_i1, int foo_arg_i2, char* foo_arg_cptr1) {
-    // Taint propagation: from argument to local variable
-    // Tainted: i1, f1, sb1, hb2, i2, i8, i4, global_i1, i6, foo_i1.1, foo_i1.2
-    int foo_i1 = foo_arg_i1;
-    return foo_i1;
-}
-            `
-        }
+        {this.props.sourcecode}
       </SyntaxHighlighter>
     );
   }
@@ -154,6 +62,7 @@ SourcecodeSection.propTypes = {
   classes: PropTypes.object.isRequired,
   highlightedLines: PropTypes.arrayOf(PropTypes.object).isRequired,
   overflowHidden: PropTypes.bool,
+  sourcecode: PropTypes.string.isRequired,
 };
 
 SourcecodeSection.defaultProps = {

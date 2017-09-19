@@ -28,7 +28,9 @@ class ResultItem extends React.Component {
       // indicates if the result card is expanded or not
       expanded: false,
       // lsit of warnings related to the analysis
-      warnings: [],
+      warnings: {},
+      // indicates if we have already fetched the details form the server
+      alreadyFetched: false,
     };
   }
 
@@ -38,7 +40,10 @@ class ResultItem extends React.Component {
    */
   handleExpandClick = () => {
     this.setState({ expanded: !this.state.expanded });
-    this.fetchWarnings();
+    // fetch details only the first time
+    if (!this.state.alreadyFetched) {
+      this.fetchWarnings();
+    }
   }
 
   /**
@@ -47,8 +52,8 @@ class ResultItem extends React.Component {
   fetchWarnings = () => {
     axios.get(`${config.get('endpoint')}/result/${this.props.functionName}`).then((response) => {
       if (response.data.success) {
-        const parsedData = JSON.parse(response.data.data);
-        this.setState({ warnings: parsedData });
+        const parsedData = response.data.data[0];
+        this.setState({ warnings: parsedData, alreadyFetched: true });
       } else {
         // TODO : Display errors
       }
@@ -64,12 +69,12 @@ class ResultItem extends React.Component {
           expanded={this.state.expanded}
           handleExpandClick={this.handleExpandClick}
         />
-        {/*
         <ResultItemBody
           expanded={this.state.expanded}
           filename={this.props.functionName}
+          warnings={this.state.warnings}
+          alreadyFetched={this.state.alreadyFetched}
         />
-        */}
       </Card>
     );
   }
