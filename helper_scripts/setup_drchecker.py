@@ -118,5 +118,6 @@ def main():
     log_success("Setup Complete.")
     os.chdir(backup_dir)
 
+
 if __name__ == "__main__":
     main()

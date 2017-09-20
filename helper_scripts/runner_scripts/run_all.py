@@ -159,5 +159,6 @@ def __add_temp_files(target_dict):
     target_dict['entry_point_out'] = os.path.join(target_dict['llvm_bc_out'],  'entry_point_out.txt')
     target_dict['hdr_file_list'] = os.path.join(target_dict['llvm_bc_out'],  'hdr_file_config.txt')
 
+
 if __name__ == "__main__":
     main()
