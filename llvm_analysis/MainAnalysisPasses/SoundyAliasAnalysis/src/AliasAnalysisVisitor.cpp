@@ -18,6 +18,8 @@ namespace DRCHECKER {
 //#define DEBUG_CALL_INSTR
 //#define STRICT_CAST
 //#define DEBUG_RET_INSTR
+#define FAST_HEURISTIC
+#define MAX_ALIAS_OBJ 50
 
     std::set<PointerPointsTo*>* AliasAnalysisVisitor::getPointsToObjects(Value *srcPointer) {
         // Get points to objects set of the srcPointer at the entry of the instruction
@@ -486,7 +488,7 @@ namespace DRCHECKER {
 
 
         // srcPointer should have pointsTo information.
-        assert(hasPointsToObjects(srcPointer));
+        //assert(hasPointsToObjects(srcPointer));
 
         // Get the src points to information.
         std::set<PointerPointsTo*>* srcPointsTo = getPointsToObjects(srcPointer);
@@ -507,25 +509,34 @@ namespace DRCHECKER {
         dbgs() << "Number of target objects:" << targetObjects.size() << "\n";
 #endif
 
+
         // Now get the list of objects to which the fieldid of the corresponding object points to.
-        std::set<AliasObject*> finalObjects;
+        std::set<std::pair<long,AliasObject*>> finalObjects;
         finalObjects.clear();
         for(const std::pair<long, AliasObject*> &currObjPair:targetObjects) {
             // fetch objects that could be pointed by the field.
             // if this object is a function argument then
             // dynamically try to create an object, if we do not have any object
-            currObjPair.second->fetchPointsToObjects(currObjPair.first, finalObjects, &I, true);
+            currObjPair.second->fetchPointsToObjects(currObjPair.first, finalObjects, &I, finalObjects.empty());
         }
         if(finalObjects.size() > 0) {
+            if(finalObjects.size() > MAX_ALIAS_OBJ) {
+                auto end = std::next(finalObjects.begin(), std::min((long)MAX_ALIAS_OBJ, (long)finalObjects.size()));
+                std::set<std::pair<long,AliasObject*>> tmpList;
+                tmpList.clear();
+                tmpList.insert(finalObjects.begin(), end);
+                finalObjects.clear();
+                finalObjects.insert(tmpList.begin(), tmpList.end());
+            }
             // Create new pointsTo set and add all objects of srcPointsTo
             std::set<PointerPointsTo*>* newPointsToInfo = new std::set<PointerPointsTo*>();
-            for(AliasObject *curr_obj:finalObjects) {
+            for(auto currPto:finalObjects) {
                 PointerPointsTo *newPointsToObj = new PointerPointsTo();
                 newPointsToObj->targetPointer = &I;
                 newPointsToObj->propogatingInstruction = &I;
-                newPointsToObj->targetObject = curr_obj;
+                newPointsToObj->targetObject = currPto.second;
                 newPointsToObj->fieldId = 0;
-                newPointsToObj->dstfieldId = 0;
+                newPointsToObj->dstfieldId = currPto.first;
                 newPointsToInfo->insert(newPointsToInfo->end(), newPointsToObj);
             }
             // Just save the newly created set as points to set for this instruction.
@@ -607,8 +618,8 @@ namespace DRCHECKER {
                     // OK, now we got the target object to which the pointer points to.
                     // We are trying to store a pointer(*) into an object field
 
-                    newDstPointsToObject->targetObject->performUpdate(newDstPointsToObject->dstfieldId, srcPointsTo,
-                                                                      &I);
+                    newDstPointsToObject->targetObject->performUpdate(newDstPointsToObject->dstfieldId,
+                                                                      srcPointsTo, &I);
 
 #ifdef DEBUG_STORE_INSTR
                     dbgs() << "Trying to perform strong update for store instruction:";
@@ -751,36 +762,41 @@ namespace DRCHECKER {
 
         if(srcPointsTo != nullptr && dstPointsTo != nullptr) {
             // get all src objects.
-            std::set<AliasObject*> srcAliasObjects;
+
+            std::set<std::pair<long, AliasObject*>> srcAliasObjects;
             for(PointerPointsTo *currPointsTo:(*srcPointsTo)) {
-                if(srcAliasObjects.find(currPointsTo->targetObject) == srcAliasObjects.end()) {
-                    srcAliasObjects.insert(currPointsTo->targetObject);
+                auto a = std::make_pair(currPointsTo->dstfieldId, currPointsTo->targetObject);
+                if(srcAliasObjects.find(a) == srcAliasObjects.end()) {
+                    srcAliasObjects.insert(a);
                 }
             }
 
-            // get all dst objects.
-            std::set<AliasObject*> dstAliasObjects;
-            for(PointerPointsTo *currPointsTo:(*dstPointsTo)) {
-                if(dstAliasObjects.find(currPointsTo->targetObject) == dstAliasObjects.end()) {
-                    dstAliasObjects.insert(currPointsTo->targetObject);
-                }
+            std::set<std::pair<long, AliasObject*>> srcDrefObjects;
+            for(auto a:srcAliasObjects) {
+                a.second->fetchPointsToObjects(a.first, srcDrefObjects);
             }
 
+            std::set<PointerPointsTo*> targetElements;
+            for(auto a:srcDrefObjects) {
+                PointerPointsTo *newRel = new PointerPointsTo();
+                newRel->dstfieldId = a.first;
+                newRel->targetObject = a.second;
+                newRel->propogatingInstruction = &I;
+                targetElements.insert(newRel);
+            }
 
+#ifdef DEBUG_CALL_INSTR
+            dbgs() << "Got:" << targetElements.size() << " to add\n";
+#endif
+            for(auto a:(*dstPointsTo)) {
+#ifdef DEBUG_CALL_INSTR
+                dbgs() << "Adding:" << targetElements.size() << "elements to the fieldid:" << a->dstfieldId << "\n";
+#endif
+                a->targetObject->performWeakUpdate(a->dstfieldId, &targetElements, &I);
+            }
 
-            for(AliasObject *srcObj:srcAliasObjects) {
-                for (AliasObject *dstObj:dstAliasObjects) {
-                    if(srcObj != dstObj) {
-                        dstObj->updateFieldPointsToFromObjects(&(srcObj->pointsTo), &I);
-#ifdef DEBUG_CALL_INSTR
-                        dbgs() << "Copied points to information from src:" << srcObj << " to dst:" << dstObj << "\n";
-#endif
-                    } else {
-#ifdef DEBUG_CALL_INSTR
-                        dbgs() << "Src and dst object are same, ignoring points to information\n";
-#endif
-                    }
-                }
+            for(auto a:targetElements) {
+                delete(a);
             }
 
 

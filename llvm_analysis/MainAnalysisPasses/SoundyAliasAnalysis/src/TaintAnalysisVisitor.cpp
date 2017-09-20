@@ -194,7 +194,10 @@ namespace DRCHECKER {
     }
 
     void TaintAnalysisVisitor::visitLoadInst(LoadInst &I) {
+
+
 #ifdef DEBUG_LOAD_INSTR
+        dbgs() << "In taint\n";
         dbgs() << "Taint Analysis Visiting Load Instruction:";
         I.print(dbgs());
         dbgs() << "\n";
@@ -533,93 +536,22 @@ namespace DRCHECKER {
 #ifdef DEBUG_CALL_INSTR
         dbgs() << "Processing memcpy function\n";
 #endif
+        // we do not need any special taint handling..because alias takes care of propagating
+        // pointer, here we just need to update taint of the arguments.
         // get src operand
         Value *srcOperand = I.getArgOperand((unsigned int) memcpyArgs[0]);
         // get dst operand
         Value *dstOperand = I.getArgOperand((unsigned int) memcpyArgs[1]);
-        // handle pointer casts
-        if(!PointsToUtils::hasPointsToObjects(currState, this->currFuncCallSites, srcOperand)) {
-            srcOperand = srcOperand->stripPointerCasts();
-        }
-        if(!PointsToUtils::hasPointsToObjects(currState, this->currFuncCallSites, dstOperand)) {
-            dstOperand = dstOperand->stripPointerCasts();
-        }
 
+        std::set<Value*> mergeVals;
+        mergeVals.insert(srcOperand);
 
-
-        // get points to information.
-        std::set<PointerPointsTo*>* srcPointsTo = PointsToUtils::getPointsToObjects(currState, this->currFuncCallSites,
-                                                                                    srcOperand);
-        std::set<PointerPointsTo*>* dstPointsTo = PointsToUtils::getPointsToObjects(currState, this->currFuncCallSites,
-                                                                                    dstOperand);
-        if(srcPointsTo != nullptr && dstPointsTo != nullptr) {
-            // get all src objects.
-            std::set<AliasObject*> srcAliasObjects;
-            for(PointerPointsTo *currPointsTo:(*srcPointsTo)) {
-                if(srcAliasObjects.find(currPointsTo->targetObject) == srcAliasObjects.end()) {
-                    srcAliasObjects.insert(currPointsTo->targetObject);
-                }
-            }
-
-            // get all dst objects.
-            std::set<AliasObject*> dstAliasObjects;
-            for(PointerPointsTo *currPointsTo:(*dstPointsTo)) {
-                if(dstAliasObjects.find(currPointsTo->targetObject) == dstAliasObjects.end()) {
-                    dstAliasObjects.insert(currPointsTo->targetObject);
-                }
-            }
-
-            // OK, now propagate taint from all srcAliasObjects to dstAliasObjects.
-            for(AliasObject *srcObject:srcAliasObjects) {
-                // copy taint from all the fields from src object to dst object
-                if (srcObject->all_contents_tainted) {
-                    TaintFlag *allContTaint = srcObject->all_contents_taint_flag;
+        std::set<TaintFlag*>* newTaintInfo = this->mergeTaintInfo(mergeVals, &I);
+        if(newTaintInfo != nullptr) {
 #ifdef DEBUG_CALL_INSTR
-                    dbgs() << "All fields of src object are tainted, so adding taint to dst objects\n";
+            dbgs() << "Trying to memcpy from tainted argument\n";
 #endif
-                    for(auto dobj:dstAliasObjects) {
-                        dobj->taintAllFields(allContTaint);
-                    }
-                } else {
-                    if (srcObject->taintedFields.size() > 0) {
-                        for (FieldTaint *currFieldTaint: srcObject->taintedFields) {
-                            long fieldID = currFieldTaint->fieldId;
-                            for (TaintFlag *currTaint:currFieldTaint->targetTaint) {
-                                TaintFlag *newTaint = new TaintFlag(currTaint, currTaint->targetInstr, &I);
-                                bool newTaintUsed;
-                                // set the flag to false by default.
-                                newTaintUsed = false;
-                                // add the taint to all dst objects
-                                for (AliasObject *dstObject:dstAliasObjects) {
-                                    if (srcObject != dstObject) {
-                                        if (dstObject->addFieldTaintFlag(fieldID, newTaint)) {
-                                            newTaintUsed = true;
-#ifdef DEBUG_CALL_INSTR
-                                            dbgs() << "Added taint flag to field:" << fieldID
-                                                   << " of the dst object:" << dstObject << "\n";
-#endif
-                                        }
-                                    } else {
-#ifdef DEBUG_CALL_INSTR
-                                        dbgs() << "Src and dst object are same, ignoring taint flag\n";
-#endif
-                                    }
-                                }
-                                // if the new taint is not used? delete the new taint.
-                                if (!newTaintUsed) {
-                                    delete (newTaint);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        } else {
-
-#ifdef DEBUG_CALL_INSTR
-            dbgs() << "Either src or dst doesn't have any points to information, ignoring memory copy function\n";
-#endif
+            this->updateTaintInfo(dstOperand, newTaintInfo);
         }
 
     }

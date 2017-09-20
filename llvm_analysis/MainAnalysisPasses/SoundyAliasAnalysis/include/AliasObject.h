@@ -242,11 +242,21 @@ namespace DRCHECKER {
              * This function does strong update, i.e first it removes all points to information
              * for the field srcfieldId and then adds the new objects into points to set.
              */
-            // remove all points to from srcfieldId
-            this->pointsTo.erase(std::remove_if(this->pointsTo.begin(), this->pointsTo.end(),
-                                                [srcfieldId](const ObjectPointsTo* x) {
-                                                        return x->fieldId == srcfieldId;
-                                                    }), this->pointsTo.end());
+
+            std::vector<ObjectPointsTo*> tmpCopy;
+            tmpCopy.clear();
+            // remove all objects, that could be pointed by srcfield id.
+            for(auto a: this->pointsTo) {
+                if(a->fieldId == srcfieldId) {
+                    delete(a);
+                } else {
+                    tmpCopy.push_back(a);
+                }
+            }
+
+
+            this->pointsTo.clear();
+            this->pointsTo.insert(this->pointsTo.end(), tmpCopy.begin(), tmpCopy.end());
 
             this->updateFieldPointsTo(srcfieldId, dstPointsTo, propogatingInstr);
         }
@@ -273,6 +283,16 @@ namespace DRCHECKER {
             }
         }
 
+        void getAllObjectsPointedByField(long srcfieldID, std::set<AliasObject *> &retSet) {
+            for(ObjectPointsTo *obj:pointsTo) {
+                if(obj->fieldId == srcfieldID) {
+                    if(retSet.find(obj->targetObject) == retSet.end())  {
+                        retSet.insert(obj->targetObject);
+                    }
+                }
+            }
+        }
+
         void updateFieldPointsToFromObjects(std::vector<ObjectPointsTo*>* dstPointsToObject,
                                             Instruction *propagatingInstr) {
             /***
@@ -286,7 +306,7 @@ namespace DRCHECKER {
                     // clear all the objects
                     currObjects.clear();
                     // first get all objects that could be pointed by srcfieldId of the current object.
-                    fetchPointsToObjects(srcfieldId, currObjects);
+                    getAllObjectsPointedByField(srcfieldId, currObjects);
                     // insert points to information only, if it is not present.
                     if (currObjects.find(currPointsTo->targetObject) == currObjects.end()) {
                         ObjectPointsTo *newPointsTo = currPointsTo->makeCopy();
@@ -307,7 +327,7 @@ namespace DRCHECKER {
                 // clear all the objects
                 currObjects.clear();
                 // first get all objects that could be pointed by srcfieldId.
-                fetchPointsToObjects(srcfieldId, currObjects);
+                getAllObjectsPointedByField(srcfieldId, currObjects);
                 // insert points to information only,
                 // if the object to be added is not present.
                 if (currObjects.find(dstObject) == currObjects.end()) {
@@ -334,7 +354,7 @@ namespace DRCHECKER {
             }
         }*/
 
-        void fetchPointsToObjects(long srcfieldId, std::set<AliasObject *> &dstObjects,
+        void fetchPointsToObjects(long srcfieldId, std::set<std::pair<long, AliasObject*>> &dstObjects,
                                   Instruction *targetInstr = nullptr, bool create_arg_obj=false) {
             /***
              * Get all objects pointed by field identified by srcfieldID
@@ -348,14 +368,15 @@ namespace DRCHECKER {
 #endif
             for(ObjectPointsTo *obj:pointsTo) {
                 if(obj->fieldId == srcfieldId) {
-                    if(std::find(dstObjects.begin(), dstObjects.end(), obj->targetObject) == dstObjects.end()) {
-                        dstObjects.insert(dstObjects.end(), obj->targetObject);
+                    auto p = std::make_pair(obj->dstfieldId, obj->targetObject);
+                    if(std::find(dstObjects.begin(), dstObjects.end(), p) == dstObjects.end()) {
+                        dstObjects.insert(dstObjects.end(), p);
                         hasObjects = true;
                     }
                 }
             }
             // if there are no objects that this field points to, generate a dummy object.
-            if(!hasObjects && create_arg_obj) {
+            if(!hasObjects && (create_arg_obj || this->isFunctionArg())) {
 #ifdef DEBUG_FETCH_POINTS_TO_OBJECTS
                 dbgs() << "Creating a new dynamic AliasObject at:";
                 targetInstr->print(dbgs());
@@ -396,7 +417,7 @@ namespace DRCHECKER {
                 //insert the newly create object.
                 pointsTo.push_back(newPointsToObj);
 
-                dstObjects.insert(dstObjects.end(), newObj);
+                dstObjects.insert(dstObjects.end(), std::make_pair(0, newObj));
             }
         }
 
@@ -585,7 +606,7 @@ namespace DRCHECKER {
             if(dstPointsTo != nullptr) {
                 std::set<AliasObject*> currObjects;
                 // first get all objects that could be pointed by srcfieldId of the current object.
-                fetchPointsToObjects(srcfieldId, currObjects);
+                getAllObjectsPointedByField(srcfieldId, currObjects);
                 //Add all objects that are in the provided set by changing the field id.
                 for (PointerPointsTo *currPointsTo: *dstPointsTo) {
                     // insert points to information only, if it is not present.

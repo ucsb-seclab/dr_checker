@@ -18,6 +18,7 @@ using namespace llvm;
 
 namespace DRCHECKER {
 //#define DEBUG_INSTR_VISIT
+//#define FAST_HEURISTIC
     /***
      * The main guy handling the visiting of driver code.
      * SDTraversal of Fig 1
@@ -29,8 +30,10 @@ namespace DRCHECKER {
 
         std::vector<VisitorCallback *> &allCallbacks;
 
+#ifdef FAST_HEURISTIC
         // a map of basic block to number of times it is analyzed.
         std::map<const BasicBlock*, unsigned long> numTimeAnalyzed;
+#endif
 
         // order in which BBs needs to be analyzed.
         // This ideally should be in topological order of the
@@ -63,6 +66,10 @@ namespace DRCHECKER {
             targetState.getOrCreateContext(this->currFuncCallSites);
             // clearing all visited call sites.
             this->visitedCallSites.clear();
+            this->inside_loop = false;
+#ifdef FAST_HEURISTIC
+            this->numTimeAnalyzed.clear();
+#endif
         }
 
         virtual void visit(Instruction &I) {

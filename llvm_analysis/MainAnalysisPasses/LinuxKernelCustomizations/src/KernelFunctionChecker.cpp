@@ -19,7 +19,7 @@ namespace DRCHECKER {
     const std::set<std::string> KernelFunctionChecker::zero_initializers{"__kmalloc"};
     const std::set<std::string> KernelFunctionChecker::memset_function_names{"memset"};
     // copy to user function.
-    const std::set<std::string> KernelFunctionChecker::copy_out_function_names{"__copy_to_user"};
+    const std::set<std::string> KernelFunctionChecker::copy_out_function_names{"__copy_to_user", "copy_to_user"};
     // init functions
     const std::set<std::string> KernelFunctionChecker::init_section_names{".init.text"};
     // memcpy functions: for points to and taint propagation.
@@ -133,7 +133,8 @@ namespace DRCHECKER {
     bool KernelFunctionChecker::is_taint_initiator(const Function *targetFunction) {
         if(targetFunction->isDeclaration() && targetFunction->hasName()) {
             std::string func_name = targetFunction->getName().str();
-            return func_name == "__copy_from_user" || func_name == "simple_write_to_buffer";
+            return func_name.find("copy_from_user") != std::string::npos ||
+                    func_name == "simple_write_to_buffer";
         }
         return false;
     }
@@ -142,7 +143,8 @@ namespace DRCHECKER {
         std::set<long> tainted_args;
         if(targetFunction->isDeclaration() && targetFunction->hasName()) {
             std::string func_name = targetFunction->getName().str();
-            if(func_name == "__copy_from_user" || func_name == "simple_write_to_buffer") {
+            if(func_name.find("copy_from_user") != std::string::npos ||
+               func_name == "simple_write_to_buffer") {
                 // first argument will get tainted.
                 tainted_args.insert(tainted_args.end(), 0);
                 return tainted_args;

@@ -13,6 +13,8 @@ namespace DRCHECKER {
 #define MAX_CALLSITE_DEPTH 5
 #define MAX_FUNC_PTR 5
 #define SMART_FUNCTION_PTR_RESOLVING
+//#define DEBUG_BB_VISIT
+//#define DEBUG_CALL_INSTR
 
     // Basic visitor functions.
     // call the corresponding function in the child callbacks.
@@ -158,6 +160,13 @@ namespace DRCHECKER {
     // Visit Call Instruction.
     void GlobalVisitor::visitCallInst(CallInst &I) {
 
+        if(this->inside_loop) {
+#ifdef DEBUG_CALL_INSTR
+            dbgs() << "Function inside loop, will be analyzed at last iteration\n";
+#endif
+            return;
+        }
+
         Function *currFunc = I.getCalledFunction();
         if(currFunc == nullptr) {
             // this is to handle casts.
@@ -170,6 +179,15 @@ namespace DRCHECKER {
             if (this->visitedCallSites.find(&I) != this->visitedCallSites.end()) {
 #ifdef DEBUG_CALL_INSTR
                 dbgs() << "Function already processed:";
+                I.print(dbgs());
+                dbgs() << "\n";
+#endif
+                return;
+            }
+
+            if(std::find(this->currFuncCallSites->begin(), this->currFuncCallSites->end(), &I) != this->currFuncCallSites->end()) {
+#ifdef DEBUG_CALL_INSTR
+                dbgs() << "Call-graph cycle found.";
                 I.print(dbgs());
                 dbgs() << "\n";
 #endif
@@ -242,13 +260,15 @@ namespace DRCHECKER {
     }
 
 
+
     void GlobalVisitor::visit(BasicBlock *BB) {
+#ifdef FAST_HEURISTIC
         if(this->numTimeAnalyzed.find(BB) != this->numTimeAnalyzed.end()) {
             if(this->numTimeAnalyzed[BB] >= GlobalVisitor::MAX_NUM_TO_VISIT) {
 #ifdef DEBUG_BB_VISIT
                 dbgs() << "Ignoring BB:" << BB->getName().str()
                        << " ad it has been analyzed more than:"
-                       << SAAVisitor::MAX_NUM_TO_VISIT << " times\n";
+                       << GlobalVisitor::MAX_NUM_TO_VISIT << " times\n";
 #endif
                 return;
             }
@@ -256,12 +276,14 @@ namespace DRCHECKER {
         } else {
             this->numTimeAnalyzed[BB] = 1;
         }
+#endif
 #ifdef DEBUG_BB_VISIT
-        dbgs() << "Starting to analyze BB:" << BB->getName().str() << "\n";
+        dbgs() << "Starting to analyze BB:" << BB->getName().str() << ":at:"<< BB->getParent()->getName() << "\n";
 #endif
         _super->visit(BB->begin(), BB->end());
     }
 
+#define DEBUG_GLOBAL_ANALYSIS
     void GlobalVisitor::analyze() {
         // the traversal order should not be null
         assert(this->traversalOrder != nullptr);
@@ -269,6 +291,7 @@ namespace DRCHECKER {
             // current strongly connected component.
             std::vector<BasicBlock *> *currSCC = (*(this->traversalOrder))[i];
             if(currSCC->size() == 1) {
+                this->inside_loop = false;
                 for(VisitorCallback *currCallback:allCallbacks) {
                     currCallback->setLoopIndicator(false);
                 }
@@ -283,6 +306,7 @@ namespace DRCHECKER {
 #ifdef DEBUG_GLOBAL_ANALYSIS
                 dbgs() << "Analyzing Loop BBS for:" << opt_num_to_analyze <<" number of times\n";
 #endif
+                this->inside_loop = true;
 
                 for(VisitorCallback *currCallback:allCallbacks) {
                     currCallback->setLoopIndicator(true);
@@ -295,6 +319,7 @@ namespace DRCHECKER {
                     }
                     // ensure that loop has been analyzed minimum number of times.
                     if(l >= (opt_num_to_analyze-1)) {
+                        this->inside_loop = false;
                         for(VisitorCallback *currCallback:allCallbacks) {
                             currCallback->setLoopIndicator(false);
                         }
