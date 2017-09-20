@@ -237,10 +237,7 @@ def _generate_llvm_bitcode(kernel_src_dir, base_output_folder, makeout_file, gcc
     os.chdir(build_src_dir)
     if command_output_dir is not None:
         os.chdir(command_output_dir)
-    if cpu_count() > 8:
-        p = Pool(cpu_count() - 2)
-    else:
-        p = Pool(cpu_count() / 2)
+    p = Pool(cpu_count())
     return_vals = p.map(_run_program, llvm_cmds)
     os.chdir(curr_dir)
     log_info("Finished Building LLVM Bitcode files")

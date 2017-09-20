@@ -2,6 +2,7 @@ from base_component import *
 import os
 import random
 import xml.etree.ElementTree as ET
+from multiprocessing import Pool, cpu_count
 
 
 class ParseHeaders(Component):
@@ -121,6 +122,36 @@ def _is_comp_binary(arg_zero):
     return False
 
 
+def _run_single_c2xml((c2xml_bin, curr_hdr_file, dst_work_dir, all_hdr_options)):
+    curr_hdr_file = curr_hdr_file.strip()
+    target_out_file = os.path.join('/tmp', os.path.basename(curr_hdr_file) + '.hdrout')
+    cmd_line = " ".join(all_hdr_options)
+    cmd_line = c2xml_bin + " " + cmd_line + " " + curr_hdr_file + " > " + target_out_file + " 2>/dev/null"
+    back_wd = os.getcwd()
+    if dst_work_dir is not None:
+        os.chdir(dst_work_dir)
+    os.system(cmd_line)
+    if dst_work_dir is not None:
+        os.chdir(back_wd)
+
+    all_entries = []
+    if os.path.exists(target_out_file) and os.stat(target_out_file).st_size > 0:
+        root = ET.parse(target_out_file).getroot()
+        for curr_s in root:
+            if curr_s.get("type") == "struct" and curr_s.get("file") == curr_hdr_file:
+                child_no = 0
+                for child_s in curr_s:
+                    if 'ioctl' in str(child_s.get("ident")) and 'compat_ioctl' not in child_s.get("ident"):
+                        all_entries.append('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',IOCTL\n')
+                    if child_s.get("ident") == "read":
+                        all_entries.append('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',FileRead\n')
+                    if child_s.get("ident") == "write":
+                        all_entries.append('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',FileWrite\n')
+                    child_no += 1
+        os.remove(target_out_file)
+    return all_entries
+
+
 def _run_c2xml(c2xml_bin, makeout_file, dst_hdr_file_list, output_file, dst_work_dir=None):
     fp = open(makeout_file, "r")
     all_comp_lines = fp.readlines()
@@ -136,37 +167,27 @@ def _run_c2xml(c2xml_bin, makeout_file, dst_hdr_file_list, output_file, dst_work
                 _handle_compile_command(comp_line, all_hdr_options)
 
     all_hdr_options.append("-D__KERNEL__")
-    all_hdr_files = []
+
     fp = open(dst_hdr_file_list, "r")
     all_hdr_files = fp.readlines()
     fp.close()
 
-    dummy_out_file = "/tmp/dummy_out.xml"
-
     output_fp = open(output_file, "w")
+    to_run_cmds = []
     for curr_hdr_file in all_hdr_files:
         curr_hdr_file = curr_hdr_file.strip()
-        cmd_line = " ".join(all_hdr_options)
-        cmd_line = c2xml_bin + " " + cmd_line + " " + curr_hdr_file + " > " + dummy_out_file + " 2>/dev/null"
-        back_wd = os.getcwd()
-        if dst_work_dir is not None:
-            os.chdir(dst_work_dir)
-        os.system(cmd_line)
-        if os.path.exists(dummy_out_file) and os.stat(dummy_out_file).st_size > 0:
-            root = ET.parse(dummy_out_file).getroot()
-            for curr_s in root:
-                if curr_s.get("type") == "struct" and curr_s.get("file") == curr_hdr_file:
-                    child_no = 0
-                    for child_s in curr_s:
-                        if 'ioctl' in str(child_s.get("ident")) and 'compat_ioctl' not in child_s.get("ident"):
-                            output_fp.write('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',IOCTL\n')
-                        if child_s.get("ident") == "read":
-                            output_fp.write('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',FileRead\n')
-                        if child_s.get("ident") == "write":
-                            output_fp.write('struct.' + str(curr_s.get("ident")) + ',' + str(child_no) + ',FileWrite\n')
-                        child_no += 1
-        if dst_work_dir is not None:
-            os.chdir(back_wd)
+        to_run_cmds.append((c2xml_bin, curr_hdr_file, dst_work_dir, all_hdr_options))
+
+    log_info("Trying to run", str(len(to_run_cmds)), "c2xml commands in parallel.")
+    p = Pool(cpu_count())
+    all_hdr_entries = p.map(_run_single_c2xml, to_run_cmds)
+    entries_writtn = 0
+    for curr_list in all_hdr_entries:
+        entries_writtn += len(curr_list)
+        for curr_line in curr_list:
+            output_fp.write(curr_line)
     output_fp.close()
+    log_success("Wrote", entries_writtn, "in to the outfile:", output_file)
+
     return True
 

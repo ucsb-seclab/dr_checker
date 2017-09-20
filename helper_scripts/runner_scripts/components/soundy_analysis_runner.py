@@ -9,7 +9,7 @@ class SoundyAnalysisRunner(Component):
     """
         Component which tries to run Soundy Analysis on all the provided entry points.
     """
-
+    
     def __init__(self, value_dict):
         soundy_analysis_so = None
         entry_point_out = None
@@ -90,7 +90,7 @@ def main():
 
 
 def _run_soundy_checker(combined_arg):
-
+    TIMEOUT_IN_MIN = "45"
     opt_bin_path = combined_arg[0]
     so_path = combined_arg[1]
     func_name = combined_arg[2]
@@ -107,7 +107,8 @@ def _run_soundy_checker(combined_arg):
         log_error("LLVM mem2reg failed on:", llvm_bc_file, " for function:", func_name,
                   ", So the output you get may be wrong.")
 
-    ret_val = os.system(opt_bin_path + " -analyze -debug -load " + so_path + ' -dr_checker -toCheckFunction=\"' +
+    timeout_prefix = 'timeout ' + TIMEOUT_IN_MIN + "m "
+    ret_val = os.system(timeout_prefix+ opt_bin_path + " -analyze -debug -load " + so_path + ' -dr_checker -toCheckFunction=\"' +
                         str(func_name) + '\" -functionType=\"' + ep_type
                         + '\" -skipInit=1 -outputFile=\"' + output_json_file + '\" ' +
                         bc_file_name + ' >> ' + output_total_file + ' 2>&1')
@@ -131,10 +132,7 @@ def _run_multi_soundy_checker(entry_point_out, opt_bin_path, soundy_pass_so, sou
 
     log_info("Found:", len(to_run_cmds), " entry points to process.")
     log_info("Processing in multiprocessing mode")
-    if cpu_count() > 8:
-        p = Pool(cpu_count() - 2)
-    else:
-        p = Pool(cpu_count() / 2)
+    p = Pool(cpu_count())
     return_vals = p.map(_run_soundy_checker, to_run_cmds)
     log_info("Finished processing:", len(to_run_cmds), " entry points.")
     total_failed = 0
