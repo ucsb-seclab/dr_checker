@@ -18,8 +18,8 @@ namespace DRCHECKER {
 //#define DEBUG_CALL_INSTR
 //#define STRICT_CAST
 //#define DEBUG_RET_INSTR
-#define FAST_HEURISTIC
-#define MAX_ALIAS_OBJ 50
+//#define FAST_HEURISTIC
+//#define MAX_ALIAS_OBJ 50
 
     std::set<PointerPointsTo*>* AliasAnalysisVisitor::getPointsToObjects(Value *srcPointer) {
         // Get points to objects set of the srcPointer at the entry of the instruction
@@ -520,6 +520,7 @@ namespace DRCHECKER {
             currObjPair.second->fetchPointsToObjects(currObjPair.first, finalObjects, &I, finalObjects.empty());
         }
         if(finalObjects.size() > 0) {
+#ifdef FAST_HEURISTIC
             if(finalObjects.size() > MAX_ALIAS_OBJ) {
                 auto end = std::next(finalObjects.begin(), std::min((long)MAX_ALIAS_OBJ, (long)finalObjects.size()));
                 std::set<std::pair<long,AliasObject*>> tmpList;
@@ -528,6 +529,7 @@ namespace DRCHECKER {
                 finalObjects.clear();
                 finalObjects.insert(tmpList.begin(), tmpList.end());
             }
+#endif
             // Create new pointsTo set and add all objects of srcPointsTo
             std::set<PointerPointsTo*>* newPointsToInfo = new std::set<PointerPointsTo*>();
             for(auto currPto:finalObjects) {
