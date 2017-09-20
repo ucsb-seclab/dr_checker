@@ -9,7 +9,7 @@ class SoundyAnalysisRunner(Component):
     """
         Component which tries to run Soundy Analysis on all the provided entry points.
     """
-    
+
     def __init__(self, value_dict):
         soundy_analysis_so = None
         entry_point_out = None
