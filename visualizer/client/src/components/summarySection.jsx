@@ -4,14 +4,7 @@ import PropTypes from 'prop-types';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Checkbox from 'material-ui/Checkbox';
 import Icon from 'material-ui/Icon';
-import { withStyles } from 'material-ui/styles';
 import SummaryInfo from './summaryInfo.jsx';
-
-const styles = theme => ({
-  gridTableSummary: {
-    borderLeft: `1px solid ${theme.palette.primary[500]}`,
-  },
-});
 
 /**
  * This class holds and manage the information regarding the summary 
@@ -22,10 +15,10 @@ class SummarySection extends React.PureComponent {
     super();
     this.state = {
       infoDialogOpen: false,
-      infoDialogTitle: '',
-      infoDialogContent: '',
+      infoDialogContent: [],
     };
   }
+
   /** 
    * Select / desect all the entry inside the table
    */
@@ -65,11 +58,10 @@ class SummarySection extends React.PureComponent {
    */
   isSelected = id => this.props.selected.indexOf(id) !== -1;
 
-  openInfoDialog = (title, content) => {
+  openInfoDialog = (content) => {
     this.setState({
       infoDialogContent: content,
       infoDialogOpen: true,
-      infoDialogTitle: title,
     });
   }
 
@@ -121,7 +113,9 @@ class SummarySection extends React.PureComponent {
                   <TableCell disablePadding>{n.warn_data.at_func}</TableCell>
                   <TableCell numeric>{n.warn_data.at_line}</TableCell>
                   <TableCell numeric>
-                    <Icon onClick={() => this.openInfoDialog(n.name, n.info)}>search</Icon>
+                    <Icon onClick={() => this.openInfoDialog(n.warn_data.inst_trace)}>
+                      search
+                    </Icon>
                   </TableCell>
                   <TableCell numeric>
                     {/* The color of the legend item is generated at random */}
@@ -134,7 +128,6 @@ class SummarySection extends React.PureComponent {
         </Table>
         <SummaryInfo
           open={this.state.infoDialogOpen}
-          title={this.state.infoDialogTitle}
           content={this.state.infoDialogContent}
           onRequestClose={this.closeInfoDalog}
         />
@@ -147,7 +140,8 @@ SummarySection.propTypes = {
   selected: PropTypes.arrayOf(PropTypes.number).isRequired,
   handleSelection: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // array of colors ub rgb form for the legend
   legendColors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default withStyles(styles)(SummarySection);
+export default SummarySection;
