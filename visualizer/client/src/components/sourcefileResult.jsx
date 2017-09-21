@@ -64,7 +64,7 @@ class SourcefileResult extends React.PureComponent {
    */
   createLegendColors = () => {
     const legendColors = [];
-    for (let i = 0; i < this.props.warnings.length; i++) {
+    for (let i = 0; i < this.props.warnings.length; i += 1) {
       legendColors.push(`rgb(${Math.floor(Math.random() * 256)},${Math.floor(Math.random() * 256)},${Math.floor(Math.random() * 256)})`);
     }
     return legendColors;

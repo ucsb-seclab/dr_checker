@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { CardContent } from 'material-ui/Card';
 import Collapse from 'material-ui/transitions/Collapse';
 import Divider from 'material-ui/Divider';
-import SourcefileResult from './sourcefileResult.jsx';
+import ContextResult from './contextResult.jsx';
 
 /**
  * This class represent the body of the resultItem.
@@ -20,16 +20,18 @@ class ResultItemBody extends React.PureComponent {
         <CardContent>
           {
             this.props.alreadyFetched ?
-              (Object.keys(this.props.warnings).map(key => (
-                <SourcefileResult
-                  key={key}
-                  filename={key}
-                  warnings={this.props.warnings[key]}
+              (this.props.contexts.map((val, idx) => (
+                <ContextResult
+                  key={`Context ${idx}`}
+                  contextTitle={`Context ${idx}`}
+                  warnings={val}
+                  alreadyFetched={this.props.alreadyFetched}
                 />
               )))
               :
               (<h4>Loading...</h4>)
           }
+
         </CardContent>
       </Collapse>
     );
@@ -39,8 +41,8 @@ class ResultItemBody extends React.PureComponent {
 ResultItemBody.propTypes = {
   // toggle card collapse
   expanded: PropTypes.bool.isRequired,
-  // list of warnings grouped by filename
-  warnings: PropTypes.object.isRequired,
+  // list of contexts
+  contexts: PropTypes.arrayOf(PropTypes.object).isRequired,
   alreadyFetched: PropTypes.bool.isRequired,
 };
 

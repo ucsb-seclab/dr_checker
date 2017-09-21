@@ -27,8 +27,8 @@ class ResultItem extends React.Component {
     this.state = {
       // indicates if the result card is expanded or not
       expanded: false,
-      // lsit of warnings related to the analysis
-      warnings: {},
+      // lsit of contexts related to the analysis
+      contexts: [],
       // indicates if we have already fetched the details form the server
       alreadyFetched: false,
     };
@@ -42,18 +42,18 @@ class ResultItem extends React.Component {
     this.setState({ expanded: !this.state.expanded });
     // fetch details only the first time
     if (!this.state.alreadyFetched) {
-      this.fetchWarnings();
+      this.fetchContexts();
     }
   }
 
   /**
-   * Get the warnings related to this analysis 
+   * Get the contexts related to this analysis 
    */
-  fetchWarnings = () => {
+  fetchContexts = () => {
     axios.get(`${config.get('endpoint')}/result/${this.props.functionName}`).then((response) => {
       if (response.data.success) {
-        const parsedData = response.data.data[0];
-        this.setState({ warnings: parsedData, alreadyFetched: true });
+        const parsedData = response.data.data;
+        this.setState({ contexts: parsedData, alreadyFetched: true });
       } else {
         // TODO : Display errors
       }
@@ -72,7 +72,7 @@ class ResultItem extends React.Component {
         <ResultItemBody
           expanded={this.state.expanded}
           filename={this.props.functionName}
-          warnings={this.state.warnings}
+          contexts={this.state.contexts}
           alreadyFetched={this.state.alreadyFetched}
         />
       </Card>
