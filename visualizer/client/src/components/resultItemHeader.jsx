@@ -34,7 +34,10 @@ function ResultItemHeader(props) {
   const classes = props.classes;
 
   return (
-    <CardActions disableActionSpacing>
+    <CardActions
+      disableActionSpacing
+      onClick={props.handleExpandClick}
+    >
       {/* Title: function name */}
       <Typography type="subheading" className={classes.cardTitle}>
         {props.title}
@@ -45,7 +48,6 @@ function ResultItemHeader(props) {
         className={classnames(classes.expand, {
           [classes.expandOpen]: props.expanded,
         })}
-        onClick={props.handleExpandClick}
         aria-expanded={props.expanded}
         aria-label="Show more"
       >

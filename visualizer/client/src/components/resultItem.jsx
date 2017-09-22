@@ -55,8 +55,11 @@ class ResultItem extends React.Component {
     axios.get(`${config.get('endpoint')}/result/${this.props.functionName}`).then((response) => {
       if (response.data.success) {
         const parsedData = response.data.data;
-        console.log(parsedData);
-        this.setState({ contexts: parsedData.by_context, instructions: parsedData.by_instruction, alreadyFetched: true });
+        this.setState({
+          contexts: parsedData.by_context,
+          instructions: parsedData.by_instruction,
+          alreadyFetched: true,
+        });
       } else {
         // TODO : Display errors
       }

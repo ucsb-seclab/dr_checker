@@ -37,7 +37,11 @@ function ContextItemHeader(props) {
   const classes = props.classes;
 
   return (
-    <CardActions disableActionSpacing className={classes.cardHeader}>
+    <CardActions
+      disableActionSpacing
+      className={classes.cardHeader}
+      onClick={props.handleExpandClick}
+    >
       <Typography type="subheading" className={classes.cardTitle}>
         {props.title}
       </Typography>
@@ -46,7 +50,6 @@ function ContextItemHeader(props) {
         className={classnames(classes.expand, {
           [classes.expandOpen]: props.expanded,
         })}
-        onClick={props.handleExpandClick}
         aria-expanded={props.expanded}
         aria-label="Show more"
       >

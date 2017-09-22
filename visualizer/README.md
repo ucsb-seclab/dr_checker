@@ -26,10 +26,10 @@ In this way it is possible to develop other types without touching the server. t
 
 ### Client
 1. Install [node js](https://nodejs.org/it/)
-```
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
+    ```
+    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
 2. Install [npm](https://www.npmjs.com/)
 3. Install [serve](https://www.npmjs.com/package/serve)
     ```

@@ -69,7 +69,14 @@ def get_results():
     # return all the filename without the extension
     for filename in os.listdir(app.config["RESULTS_DIR"]):
         if "instr_warngs" not in filename:
-            response["data"].append({"name" : os.path.splitext(filename)[0]})
+            analysis_by_context_file_path = os.path.join(app.config["RESULTS_DIR"], filename)
+            if os.path.exists(analysis_by_context_file_path):
+                content_context_analysis = ""
+                with open(analysis_by_context_file_path, "r") as result_file:
+                    content_context_analysis = result_file.read()
+                json_data = json.loads(content_context_analysis)
+                if json_data["num_contexts"] != 0:
+                    response["data"].append({"name" : os.path.splitext(filename)[0]})
     return jsonify(response)
 
 
@@ -102,8 +109,8 @@ def get_result(filename):
         for warning in context["warnings"]:
             filename = warning["warn_data"]["at_file"]
             # remove junk
-            if "/home/machiry/workdir/" in filename:
-                filename = filename.replace("/home/machiry/workdir/", '')
+            if app.config["PATH_TO_BE_REPLACED"] in filename:
+                filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], '')
             if results_warnings.has_key(filename):
                 results_warnings[filename].append(warning)
             else:
@@ -122,8 +129,8 @@ def get_result(filename):
             for warning in instr["warnings"]:
                 filename = warning["warn_data"]["at_file"]
                 # remove junk
-                if "/home/machiry/workdir/" in filename:
-                    filename = filename.replace("/home/machiry/workdir/", '')
+                if app.config["PATH_TO_BE_REPLACED"] in filename:
+                    filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], '')
                 if results_warnings.has_key(filename):
                     results_warnings[filename].append(warning)
                 else:
