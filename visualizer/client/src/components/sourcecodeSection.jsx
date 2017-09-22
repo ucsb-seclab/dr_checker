@@ -8,10 +8,12 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/styles';
 const styles = theme => ({
   highlighterRoot: {
     border: `1px solid ${theme.palette.primary[500]}`,
+    marginTop: 70,
   },
   highlighterOverflowHidden: {
     overflowY: 'scroll',
     maxHeight: 300,
+    marginTop: 0,
   },
 });
 

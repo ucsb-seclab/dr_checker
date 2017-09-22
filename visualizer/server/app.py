@@ -68,7 +68,8 @@ def get_results():
         return jsonify(response)
     # return all the filename without the extension
     for filename in os.listdir(app.config["RESULTS_DIR"]):
-        response["data"].append({"name" : os.path.splitext(filename)[0]})
+        if "instr_warngs" not in filename:
+            response["data"].append({"name" : os.path.splitext(filename)[0]})
     return jsonify(response)
 
 
@@ -80,32 +81,56 @@ def get_result(filename):
     along with the source code analyzed
     """
     response = {"success": True, "data" : {}}
-    analysis_content_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json')
+    analysis_by_context_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json')
+    analysis_by_instruction_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json.instr_warngs.json')
     # returns error if filename does not exist
-    if not os.path.exists(analysis_content_file_path):
+    if not os.path.exists(analysis_by_context_file_path):
         response["success"] = False
         response["msg"] = "The requested file does not exist"
         return jsonify(response)
+    # check if there is a json by instruction for the requested analysys
+    is_analysis_by_instr_preent = True if os.path.exists(analysis_by_instruction_file_path) else False
     # returns the analysis results and the seurce code of the analyzed file
-    content = ""
-    with open(analysis_content_file_path, "r") as result_file:
-        content = result_file.read()
-    json_data = json.loads(content)
-    # group result by source code (BAD CODE)
+    content_context_analysis = ""
+    with open(analysis_by_context_file_path, "r") as result_file:
+        content_context_analysis = result_file.read()
+    json_data = json.loads(content_context_analysis)
+    # group result of context analysis by source code (BAD CODE)
     results = []
     for context in json_data["all_contexts"]:
         results_warnings = {}
         for warning in context["warnings"]:
             filename = warning["warn_data"]["at_file"]
             # remove junk
-            if "/home/machiry/workdir/crowell_stuff/huawei_mounted/Code_Opensource/" in filename:
-                filename = filename.replace("/home/machiry/workdir/crowell_stuff/huawei_mounted/Code_Opensource/", '')
+            if "/home/machiry/workdir/" in filename:
+                filename = filename.replace("/home/machiry/workdir/", '')
             if results_warnings.has_key(filename):
                 results_warnings[filename].append(warning)
             else:
                 results_warnings[filename] = [warning]
         results.append(results_warnings)
-    response["data"] = results
+    response["data"]["by_context"] = results
+    results = {}
+    if is_analysis_by_instr_preent:
+        content_instruction_analysis = ""
+        with open(analysis_by_instruction_file_path, "r") as result_file:
+            content_instruction_analysis = result_file.read()
+        json_data = json.loads(content_instruction_analysis)
+        # group result of context analysis by source code (BAD CODE)
+        for instr in json_data["all_instrs"]:
+            results_warnings = {}
+            for warning in instr["warnings"]:
+                filename = warning["warn_data"]["at_file"]
+                # remove junk
+                if "/home/machiry/workdir/" in filename:
+                    filename = filename.replace("/home/machiry/workdir/", '')
+                if results_warnings.has_key(filename):
+                    results_warnings[filename].append(warning)
+                else:
+                    results_warnings[filename] = [warning]
+            results[instr["at"]] = results_warnings
+    response["data"]["by_instruction"] = results
+
     return jsonify(response)
 
 
@@ -117,7 +142,6 @@ def get_sourcecode(path):
     """
     path = path.replace('*', '/')
     local_path_to_sourcecode = os.path.join(app.config["SOURCECODE_DIR"], path)
-    print local_path_to_sourcecode
     resp = "No such file..."
     if(os.path.exists(local_path_to_sourcecode)):
         with open(local_path_to_sourcecode) as sourcecode_file:

@@ -27,8 +27,10 @@ class ResultItem extends React.Component {
     this.state = {
       // indicates if the result card is expanded or not
       expanded: false,
-      // lsit of contexts related to the analysis
+      // list of contexts related to the analysis
       contexts: [],
+      // list of instructions related to the analysis
+      instructions: {},
       // indicates if we have already fetched the details form the server
       alreadyFetched: false,
     };
@@ -53,7 +55,8 @@ class ResultItem extends React.Component {
     axios.get(`${config.get('endpoint')}/result/${this.props.functionName}`).then((response) => {
       if (response.data.success) {
         const parsedData = response.data.data;
-        this.setState({ contexts: parsedData, alreadyFetched: true });
+        console.log(parsedData);
+        this.setState({ contexts: parsedData.by_context, instructions: parsedData.by_instruction, alreadyFetched: true });
       } else {
         // TODO : Display errors
       }
@@ -73,6 +76,7 @@ class ResultItem extends React.Component {
           expanded={this.state.expanded}
           filename={this.props.functionName}
           contexts={this.state.contexts}
+          instructions={this.state.instructions}
           alreadyFetched={this.state.alreadyFetched}
         />
       </Card>

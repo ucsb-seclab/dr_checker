@@ -12,7 +12,7 @@ import Slide from 'material-ui/transitions/Slide';
 
 const styles = {
   appBar: {
-    position: 'relative',
+    position: 'absolute',
   },
   flex: {
     flex: 1,
