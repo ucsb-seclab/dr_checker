@@ -45,29 +45,29 @@ In this way it is possible to develop other types without touching the server. t
 ### Production
 1. Set the DEBUG config (inside ./server/config.py) to False
 2. Activate the virtualenv created during the installation
-```
-workon dr_checker_venv
-```
+    ```
+    workon dr_checker_venv
+    ```
 3. Run the server
-```
-python ./server/app.py
-```
+    ```
+    python ./server/app.py
+    ```
 4. Run the client
-```
-serve -s ./client/build
-```
+    ```
+    serve -s ./client/build
+    ```
 
 ### Development
 1. Set the DEBUG config (inside ./server/config.py) to True
 2. Activate the virtualenv created during the installation
-```
-workon dr_checker_venv
-```
+    ```
+    workon dr_checker_venv
+    ```
 3. Run the server
-```
-python ./server/app.py
-```
+    ```
+    python ./server/app.py
+    ```
 4. Run the client
-```
-npm run start ./client
-```
+    ```
+    npm run start ./client
+    ```
