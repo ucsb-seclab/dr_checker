@@ -26,7 +26,7 @@ function MainStructure(props) {
       <AppBar position="static" >
         <Toolbar>
           <Typography type="title">
-            Dr_checker visualizer
+            Dr.Checker Warnings Visualizer
           </Typography>
         </Toolbar>
       </AppBar>
