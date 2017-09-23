@@ -3,12 +3,15 @@ DR.CHECKER : A Soundy Vulnerability Detection Tool for Linux Kernel Drivers
 
 [![License](https://img.shields.io/github/license/angr/angr.svg)](https://github.com/ucsb-seclab/dr_checker/blob/master/LICENSE)
 
-This repo contains all the sources, including setup scripts.
+This repo contains all the sources, including setup scripts. 
+Now with an Amazing UI to view the warnings along with corresponding source files.
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 ### Announcements
-* **13 Sept 2017**: We have started to work on a set of heuristics and precision improvements to reduce false-positives. Expect an update by 22 Sept 2017.
-* **13 Sept 2017**: [Sebastiano](https://github.com/Phat3) will be working on the simple web-based UI to view warnings.
+**22 Sept 2017**: 
+* Precision and speed improvements made to the analysis core.
+* [UI](https://github.com/ucsb-seclab/dr_checker/tree/speedy/visualizer) to view all the warnings. (Thanks to [Sebastiano](https://github.com/Phat3))
+
 ## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
 ## 1. Setup
@@ -177,7 +180,10 @@ This is the path of the folder provided to the option `O=` for `make` command du
 
 Not all kernels need a separate out path. You may build kernel by not providing an option `O`, in which case you SHOULD NOT provide value for that option while running `run_all.py`.
 
-### 3.2 Post-processing DR.CHECKER results
+### 3.3 Visualizing DR.CHECKER results :snowflake:
+We provide a web-based UI to view all the warnings. Please refer [Visualization](https://github.com/ucsb-seclab/dr_checker/tree/speedy/visualizer).
+
+### 3.4 Post-processing DR.CHECKER results
 To your liking, we also provide a script to post-process the results. [Check it out](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/postprocessing.md).
 
 Have fun!!
