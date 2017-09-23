@@ -68,15 +68,18 @@ def get_results():
         return jsonify(response)
     # return all the filename without the extension
     for filename in os.listdir(app.config["RESULTS_DIR"]):
-        if "instr_warngs" not in filename:
+        if filename.endswith("json") and "instr_warngs" not in filename:
             analysis_by_context_file_path = os.path.join(app.config["RESULTS_DIR"], filename)
             if os.path.exists(analysis_by_context_file_path):
                 content_context_analysis = ""
                 with open(analysis_by_context_file_path, "r") as result_file:
                     content_context_analysis = result_file.read()
-                json_data = json.loads(content_context_analysis)
-                if json_data["num_contexts"] != 0:
-                    response["data"].append({"name" : os.path.splitext(filename)[0]})
+                    try:    
+                        json_data = json.loads(content_context_analysis)
+                        if json_data["num_contexts"] != 0:
+                            response["data"].append({"name" : os.path.splitext(filename)[0]})
+                    except Exception as e:
+			            pass
     return jsonify(response)
 
 
@@ -104,13 +107,19 @@ def get_result(filename):
     json_data = json.loads(content_context_analysis)
     # group result of context analysis by source code (BAD CODE)
     results = []
+    should_replace_path = False
+    if 'REPLACE_KERNEL_SRC' in app.config:
+        should_replace_path = app.config['REPLACE_KERNEL_SRC']
+    new_src_dir = None
+    if 'SOURCECODE_DIR' in app.config:
+        new_src_dir = app.config['SOURCECODE_DIR']
     for context in json_data["all_contexts"]:
         results_warnings = {}
         for warning in context["warnings"]:
             filename = warning["warn_data"]["at_file"]
             # remove junk
-            if app.config["PATH_TO_BE_REPLACED"] in filename:
-                filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], '')
+            if should_replace_path and app.config["PATH_TO_BE_REPLACED"] in filename and new_src_dir is not None:
+                filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], new_src_dir)
             if results_warnings.has_key(filename):
                 results_warnings[filename].append(warning)
             else:
@@ -129,8 +138,8 @@ def get_result(filename):
             for warning in instr["warnings"]:
                 filename = warning["warn_data"]["at_file"]
                 # remove junk
-                if app.config["PATH_TO_BE_REPLACED"] in filename:
-                    filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], '')
+                if should_replace_path and app.config["PATH_TO_BE_REPLACED"] in filename and new_src_dir is not None:
+                    filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], new_src_dir)
                 if results_warnings.has_key(filename):
                     results_warnings[filename].append(warning)
                 else:
