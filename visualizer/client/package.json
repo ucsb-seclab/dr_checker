@@ -1,0 +1,34 @@
+{
+  "name": "create-react-app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.16.2",
+    "classnames": "^2.2.5",
+    "jss": "latest",
+    "jss-preset-default": "latest",
+    "material-ui": "next",
+    "material-ui-icons": "^1.0.0-beta.5",
+    "prop-types": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-global-configuration": "^1.2.0",
+    "react-jss": "latest",
+    "react-scripts": "latest",
+    "react-syntax-highlighter": "^5.7.0",
+    "recompose": "latest"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "eslint": "^4.6.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.3.0"
+  }
+}
