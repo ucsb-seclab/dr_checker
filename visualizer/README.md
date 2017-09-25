@@ -1,4 +1,5 @@
 # Visualizer for dr_checker
+![alt text](https://raw.githubusercontent.com/ucsb-seclab/dr_checker/speedy/visualizer/images/dr_checker.png)
 The visualizer is composed by two parts:
 * **SERVER** : A flask application that implements a set of API which read and interpret the json result files of of dr_checker.
 * **CLIENT** : A react application that uses the API provded by the server and displays those results in a fancy way.
