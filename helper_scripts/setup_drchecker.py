@@ -110,7 +110,7 @@ def main():
     print ""
     log_success("Add following lines to your .bashrc")
     print("export LLVM_ROOT=", build_dir)
-    print("export PATH=$PATH:$LLVM_ROOT/bin:" + sparse_dir)
+    print("export PATH=$LLVM_ROOT/bin:" + sparse_dir + ":$PATH")
     print ""
     log_success("After adding the above lines to .bashrc.\nPlease run: source ~/.bashrc on the "
                 "terminal for the changes to take effect.")
