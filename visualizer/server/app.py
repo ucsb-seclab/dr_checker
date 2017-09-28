@@ -69,6 +69,9 @@ def get_results():
         return jsonify(response)
     # return all the filename without the extension
     for filename in os.listdir(app.config["RESULTS_DIR"]):
+        filename_fp = os.path.join(app.config["RESULTS_DIR"], filename)
+        if os.path.isdir(filename_fp) or not filename_fp.endswith('json'):
+   	       continue
         filename_without_extension = filename.split('.')[0]
         if utils.isContextAnalysisPresent(app.config, filename):
             response["data"].append(filename_without_extension)
