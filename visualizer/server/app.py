@@ -5,7 +5,8 @@ List of RESTful route
 import os
 from datetime import timedelta
 from functools import update_wrapper
-from flask import Flask, jsonify, make_response, request, current_app, json
+from flask import Flask, jsonify, make_response, request, current_app
+import utils
 
 
 app = Flask(__name__) # pylint: disable=invalid-name
@@ -68,18 +69,13 @@ def get_results():
         return jsonify(response)
     # return all the filename without the extension
     for filename in os.listdir(app.config["RESULTS_DIR"]):
-        if filename.endswith("json") and "instr_warngs" not in filename:
-            analysis_by_context_file_path = os.path.join(app.config["RESULTS_DIR"], filename)
-            if os.path.exists(analysis_by_context_file_path):
-                content_context_analysis = ""
-                with open(analysis_by_context_file_path, "r") as result_file:
-                    content_context_analysis = result_file.read()
-                    try:    
-                        json_data = json.loads(content_context_analysis)
-                        if json_data["num_contexts"] != 0:
-                            response["data"].append({"name" : os.path.splitext(filename)[0]})
-                    except Exception as e:
-			            pass
+        filename_without_extension = filename.split('.')[0]
+        if utils.isContextAnalysisPresent(app.config, filename):
+            response["data"].append(filename_without_extension)
+            continue
+        if utils.isInstructionAnalysisPresent(app.config, filename) and \
+           filename_without_extension not in response["data"]:
+            response["data"].append(filename_without_extension)
     return jsonify(response)
 
 
@@ -90,63 +86,13 @@ def get_result(filename):
     This route returns the details of the analysis relative to the filename specified
     along with the source code analyzed
     """
-    response = {"success": True, "data" : {}}
-    analysis_by_context_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json')
-    analysis_by_instruction_file_path = os.path.join(app.config["RESULTS_DIR"], filename + '.json.instr_warngs.json')
-    # returns error if filename does not exist
-    if not os.path.exists(analysis_by_context_file_path):
-        response["success"] = False
-        response["msg"] = "The requested file does not exist"
-        return jsonify(response)
-    # check if there is a json by instruction for the requested analysys
-    is_analysis_by_instr_preent = True if os.path.exists(analysis_by_instruction_file_path) else False
-    # returns the analysis results and the seurce code of the analyzed file
-    content_context_analysis = ""
-    with open(analysis_by_context_file_path, "r") as result_file:
-        content_context_analysis = result_file.read()
-    json_data = json.loads(content_context_analysis)
-    # group result of context analysis by source code (BAD CODE)
-    results = []
-    should_replace_path = False
-    if 'REPLACE_KERNEL_SRC' in app.config:
-        should_replace_path = app.config['REPLACE_KERNEL_SRC']
-    new_src_dir = None
-    if 'SOURCECODE_DIR' in app.config:
-        new_src_dir = app.config['SOURCECODE_DIR']
-    for context in json_data["all_contexts"]:
-        results_warnings = {}
-        for warning in context["warnings"]:
-            filename = warning["warn_data"]["at_file"]
-            # remove junk
-            if should_replace_path and app.config["PATH_TO_BE_REPLACED"] in filename and new_src_dir is not None:
-                filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], new_src_dir)
-            if results_warnings.has_key(filename):
-                results_warnings[filename].append(warning)
-            else:
-                results_warnings[filename] = [warning]
-        results.append(results_warnings)
-    response["data"]["by_context"] = results
-    results = {}
-    if is_analysis_by_instr_preent:
-        content_instruction_analysis = ""
-        with open(analysis_by_instruction_file_path, "r") as result_file:
-            content_instruction_analysis = result_file.read()
-        json_data = json.loads(content_instruction_analysis)
-        # group result of context analysis by source code (BAD CODE)
-        for instr in json_data["all_instrs"]:
-            results_warnings = {}
-            for warning in instr["warnings"]:
-                filename = warning["warn_data"]["at_file"]
-                # remove junk
-                if should_replace_path and app.config["PATH_TO_BE_REPLACED"] in filename and new_src_dir is not None:
-                    filename = filename.replace(app.config["PATH_TO_BE_REPLACED"], new_src_dir)
-                if results_warnings.has_key(filename):
-                    results_warnings[filename].append(warning)
-                else:
-                    results_warnings[filename] = [warning]
-            results[instr["at"]] = results_warnings
-    response["data"]["by_instruction"] = results
-
+    response = {
+        "success": True,
+        "data" : {
+            "by_context" : utils.getAnalysisResultByContext(app.config, filename),
+            "by_instruction" : utils.getAnalysisResultByInstruction(app.config, filename)
+        }
+    }
     return jsonify(response)
 
 
@@ -159,7 +105,7 @@ def get_sourcecode(path):
     path = path.replace('*', '/')
     local_path_to_sourcecode = os.path.join(app.config["SOURCECODE_DIR"], path)
     resp = "No such file..."
-    if(os.path.exists(local_path_to_sourcecode)):
+    if os.path.exists(local_path_to_sourcecode):
         with open(local_path_to_sourcecode) as sourcecode_file:
             resp = sourcecode_file.read()
     return resp
