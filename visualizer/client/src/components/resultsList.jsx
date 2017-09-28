@@ -45,7 +45,7 @@ class ResultsList extends React.PureComponent {
     return (
       <div>
         <Paper className={classes.paper}>
-          {this.state.data.map(n => (<ResultItem key={n.name} functionName={n.name} />))}
+          {this.state.data.map((n, idx) => (<ResultItem key={idx} functionName={n} />))}
         </Paper>
       </div>
     );
