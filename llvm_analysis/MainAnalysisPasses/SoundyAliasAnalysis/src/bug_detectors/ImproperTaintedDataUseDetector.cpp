@@ -151,7 +151,7 @@ namespace DRCHECKER {
                         }
                         if(targetGlobal != nullptr && targetGlobal->hasInitializer()) {
                             const Constant *currConst = targetGlobal->getInitializer();
-                            if(dyn_cast<ConstantArray>(currConst)) {
+                            if(dyn_cast<ConstantDataArray>(currConst)) {
                                 const ConstantDataArray *currA = dyn_cast<ConstantDataArray>(currConst);
                                 if(currA->getAsString().find("%s") != std::string::npos) {
                                     std::string warningMsg = "%s used in sscanf";

@@ -137,7 +137,7 @@ namespace DRCHECKER {
          * @return Set of new points to information.
          */
         std::set<PointerPointsTo*>* makePointsToCopy(Instruction *propInstruction, Value *srcPointer,
-                                                     std::set<PointerPointsTo*>* srcPointsTo, unsigned long fieldId);
+                                                     std::set<PointerPointsTo*>* srcPointsTo, long fieldId=-1);
 
         /***
          * Merge points-to information of all the provided values.

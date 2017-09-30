@@ -57,10 +57,12 @@ namespace DRCHECKER {
             bool add_taint = false;
             for (auto currTaint:*srcTaintInfo) {
                 add_taint = true;
-                Instruction *srcInstruction = dyn_cast<Instruction>(currTaint->targetInstr);
-                if(srcInstruction != nullptr && targetInstruction != nullptr) {
-                    add_taint = BBTraversalHelper::isReachable(srcInstruction, targetInstruction,
-                                                               this->currFuncCallSites);
+                if(currTaint->targetInstr != nullptr) {
+                    Instruction *srcInstruction = dyn_cast<Instruction>(currTaint->targetInstr);
+                    if (srcInstruction != nullptr && targetInstruction != nullptr) {
+                        add_taint = BBTraversalHelper::isReachable(srcInstruction, targetInstruction,
+                                                                   this->currFuncCallSites);
+                    }
                 }
                 if(add_taint) {
                     TaintFlag *newTaintFlag = new TaintFlag(currTaint, targetInstruction, srcOperand);

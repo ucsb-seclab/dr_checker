@@ -80,7 +80,7 @@ namespace DRCHECKER {
     }
 
     std::set<PointerPointsTo*>* AliasAnalysisVisitor::makePointsToCopy(Instruction *propInstruction, Value *srcPointer,
-                                                             std::set<PointerPointsTo*>* srcPointsTo, unsigned long fieldId) {
+                                                             std::set<PointerPointsTo*>* srcPointsTo, long fieldId) {
         /***
          * Makes copy of points to information from srcPointer to propInstruction
          */
@@ -93,7 +93,11 @@ namespace DRCHECKER {
             if(visitedObjects.find(currPointsToObj->targetObject) == visitedObjects.end()) {
                 PointerPointsTo *newPointsToObj = new PointerPointsTo();
                 newPointsToObj->propogatingInstruction = propInstruction;
-                newPointsToObj->dstfieldId = fieldId;
+                if(fieldId >= 0) {
+                    newPointsToObj->dstfieldId = fieldId;
+                } else {
+                    newPointsToObj->dstfieldId = currPointsToObj->dstfieldId;
+                }
                 newPointsToObj->fieldId = 0;
                 newPointsToObj->targetObject = currPointsToObj->targetObject;
                 newPointsToObj->targetPointer = srcPointer;
@@ -423,38 +427,51 @@ namespace DRCHECKER {
 
             }
         } else {
-            // OK, we are not indexing a struct. This means, we are indexing an array
-            ConstantInt *CI = dyn_cast<ConstantInt>(I.getOperand(1));
-            // OK, we are trying to access an array, first number should be constant, actually it should be zero
-
-            // are we incrementing pointer? if yes, then index 1 may not be constant.
-            if(I.getNumOperands() > 2) {
-                assert(CI != nullptr);
-            }
-            // we could have array operand as first operand, rather than pointer operand.
-            // array operand could be at end
-            if(!hasPointsToObjects(srcPointer) && CI == nullptr) {
-                // check if this is the array operand.
-                srcPointer = I.getOperand(1);
-                if(!hasPointsToObjects(srcPointer)) {
-                    srcPointer = srcPointer->stripPointerCasts();
+            for(int i=0;i<I.getNumOperands();i++) {
+                if(dyn_cast<Constant>(I.getOperand(i))) {
+                    continue;
                 }
-            }
-            //Ignore the index.
-            if(hasPointsToObjects(srcPointer)) {
-                std::set<PointerPointsTo*>* srcPointsTo = getPointsToObjects(srcPointer);
-                std::set<PointerPointsTo*>* newPointsToInfo = makePointsToCopy(&I, &I, srcPointsTo, 0);
-                this->updatePointsToObjects(&I, newPointsToInfo);
-            } else {
-                // we are trying to dereference an array
-                // however the src pointer does not point to any object.
-                // How sad??
+                srcPointer = I.getOperand(i);
+
+                // OK, we are not indexing a struct. This means, we are indexing an array
+                //ConstantInt *CI = dyn_cast<ConstantInt>(I.getOperand(1));
+                // OK, we are trying to access an array, first number should be constant, actually it should be zero
+
+                // are we incrementing pointer? if yes, then index 1 may not be constant.
+                /*if (I.getNumOperands() > 2) {
+                    assert(CI != nullptr);
+                }*/
+                //dbgs() << "CURRINST:" << I << "\n";
+                //for (int i = 0; i < I.getNumOperands(); i++) {
+                    //dbgs() << "Oper:" << *(I.getOperand(i)) << "\n";
+                //}
+
+                // we could have array operand as first operand, rather than pointer operand.
+                // array operand could be at end
+                if (!hasPointsToObjects(srcPointer)) {
+                    // check if this is the array operand.
+                    // srcPointer = I.getOperand(1);
+                    if (!hasPointsToObjects(srcPointer)) {
+                        srcPointer = srcPointer->stripPointerCasts();
+                    }
+                }
+                //Ignore the index.
+                if (hasPointsToObjects(srcPointer)) {
+                    std::set<PointerPointsTo *> *srcPointsTo = getPointsToObjects(srcPointer);
+                    std::set<PointerPointsTo *> *newPointsToInfo = makePointsToCopy(&I, &I, srcPointsTo, -1);
+                    this->updatePointsToObjects(&I, newPointsToInfo);
+                    break;
+                } else {
+                    // we are trying to dereference an array
+                    // however the src pointer does not point to any object.
+                    // How sad??
 #ifdef DEBUG_GET_ELEMENT_PTR
-                errs() << "Array pointer does not point to any object:";
-                srcPointer->print(dbgs());
-                errs() << "Ignoring.\n";
+                    errs() << "Array pointer does not point to any object:";
+                    srcPointer->print(dbgs());
+                    errs() << "Ignoring.\n";
 #endif
-                //assert(false);
+                    //assert(false);
+                }
             }
 
         }
