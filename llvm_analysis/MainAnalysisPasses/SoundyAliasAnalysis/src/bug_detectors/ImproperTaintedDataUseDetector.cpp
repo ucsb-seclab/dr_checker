@@ -1,6 +1,7 @@
 //
 // Created by machiry on 1/30/17.
 //
+#include <llvm/IR/Operator.h>
 #include "bug_detectors/ImproperTaintedDataUseDetector.h"
 #include "bug_detectors/warnings/ImproperTaintedDataUseWarning.h"
 #include "PointsToUtils.h"
@@ -9,6 +10,7 @@ using namespace llvm;
 
 namespace DRCHECKER {
 //#define DEBUG_KERNEL_MEMORY_LEAK_DETECTOR
+#define ONLY_ONE_WARNING
 
     VisitorCallback* ImproperTaintedDataUseDetector::visitCallInst(CallInst &I, Function *targetFunction,
                                                                    std::vector<Instruction *> *oldFuncCallSites,
@@ -86,6 +88,7 @@ namespace DRCHECKER {
                         if(this->warnedInstructions.find(&I) == this->warnedInstructions.end()) {
                             this->warnedInstructions.insert(&I);
                         }
+
                     }
                 }
 
@@ -104,8 +107,8 @@ namespace DRCHECKER {
                     std::string sscanfFunc("sscanf");
 
                     //kstrto functions
-                    std::string kstrtoFunc("kstrto");
-                    std::string simple_strto("simple_strto");
+                    //std::string kstrtoFunc("kstrto");
+                    //std::string simple_strto("simple_strto");
 
                     std::set<Value *> toCheck;
                     toCheck.clear();
@@ -128,15 +131,82 @@ namespace DRCHECKER {
                             }
                         }
                     }
-                    if ((funcName.compare(0, sscanfFunc.length(), sscanfFunc) == 0) ||
+                    if ((funcName.compare(0, sscanfFunc.length(), sscanfFunc) == 0) /*||
                         (funcName.compare(0, kstrtoFunc.length(), kstrtoFunc) == 0) ||
-                        (funcName.compare(0, simple_strto.length(), simple_strto) == 0) ) {
+                        (funcName.compare(0, simple_strto.length(), simple_strto) == 0)*/ ) {
                         // this is sscanf function. or
                         // kstr function
                         // first argument is the pointer to be checked.
 
                         toCheck.insert(I.getArgOperand(0));
+
+                        Value *formatString = I.getArgOperand(1);
+                        llvm::GlobalVariable *targetGlobal =dyn_cast<llvm::GlobalVariable>(formatString);
+                        if(targetGlobal == nullptr) {
+                            GEPOperator *gep = dyn_cast<GEPOperator>(formatString);
+                            if (gep && gep->getNumOperands() > 0 && gep->getPointerOperand()) {
+                                formatString = gep->getPointerOperand();
+                                targetGlobal =dyn_cast<llvm::GlobalVariable>(formatString);
+                            }
+                        }
+                        if(targetGlobal != nullptr && targetGlobal->hasInitializer()) {
+                            const Constant *currConst = targetGlobal->getInitializer();
+                            if(dyn_cast<ConstantArray>(currConst)) {
+                                const ConstantDataArray *currA = dyn_cast<ConstantDataArray>(currConst);
+                                if(currA->getAsString().find("%s") != std::string::npos) {
+                                    std::string warningMsg = "%s used in sscanf";
+                                    std::vector<Instruction *> instructionTrace;
+                                    VulnerabilityWarning *currWarning = new VulnerabilityWarning(
+                                            this->currFuncCallSites1,
+                                            &instructionTrace,
+                                            warningMsg,
+                                            &I,
+                                            "DangerousFormatSpecifier says:");
+                                    this->currState.addVulnerabilityWarning(currWarning);
+#ifdef ONLY_ONE_WARNING
+                                    return nullptr;
+
+#endif
+                                } else {
+                                    return nullptr;
+                                }
+                            }
+                        }
                     }
+
+                    std::set<PointerPointsTo*> currValPointsTo;
+                    for(auto currVal:toCheck) {
+                        std::set<PointerPointsTo*> *currPtsTo = PointsToUtils::getPointsToObjects(this->currState, oldFuncCallSites, currVal);
+                        if(currPtsTo != nullptr) {
+                            currValPointsTo.insert(currPtsTo->begin(), currPtsTo->end());
+                        }
+                    }
+
+                    for(PointerPointsTo *currPtTo: currValPointsTo) {
+                        std::set<TaintFlag*> *currTaintSet = currPtTo->targetObject->getFieldTaintInfo(currPtTo->dstfieldId);
+                        if(currTaintSet != nullptr) {
+                            for(auto currTaint:*currTaintSet) {
+                                std::string warningMsg = "Tainted Data used in risky function";
+                                std::vector<Instruction *> &instructionTrace = currTaint->instructionTrace;
+                                VulnerabilityWarning *currWarning = new ImproperTaintedDataUseWarning(
+                                        currPtTo->targetObject->getObjectPtr(),
+                                        this->currFuncCallSites1,
+                                        &instructionTrace,
+                                        warningMsg, &I,
+                                        TAG);
+                                this->currState.addVulnerabilityWarning(currWarning);
+                                if (this->warnedInstructions.find(&I) == this->warnedInstructions.end()) {
+                                    this->warnedInstructions.insert(&I);
+                                }
+#ifdef ONLY_ONE_WARNING
+                                break;
+
+#endif
+                            }
+                        }
+                    }
+                /*
+
 
                     std::set<AliasObject *> allObjects;
                     allObjects.clear();
@@ -177,6 +247,7 @@ namespace DRCHECKER {
 #endif
                         }
                     }
+                    */
 
 
             }
