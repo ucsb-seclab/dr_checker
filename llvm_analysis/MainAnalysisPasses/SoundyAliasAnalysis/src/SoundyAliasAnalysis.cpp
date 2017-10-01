@@ -71,6 +71,10 @@ namespace DRCHECKER {
                                             cl::desc("Path to the output file, where all the warnings should be stored."),
                                             cl::value_desc("Path of the output file."), cl::init(""));
 
+    static cl::opt<std::string> instrWarnings("instrWarnOutput",
+                                              cl::desc("Path to the output file, where all the warnings w.r.t instructions should be stored."),
+                                              cl::value_desc("Path of the output file."), cl::init(""));
+
 
     struct SAAPass: public ModulePass {
     public:
@@ -259,8 +263,14 @@ namespace DRCHECKER {
 
                             dbgs() << "[+] Return message from file write:" << res_code.message() << "\n";
 
-                            std::string instrWarningsFile(outputFile);
-                            instrWarningsFile.append(".instr_warngs.json");
+                            std::string instrWarningsFile;
+                            std::string originalFile = instrWarnings;
+                            if(!originalFile.empty()) {
+                                instrWarningsFile = originalFile;
+                            } else {
+                                instrWarningsFile = outputFile;
+                                instrWarningsFile.append(".instr_warngs.json");
+                            }
 
                             dbgs() << "[+] Writing Instr output to:" << instrWarningsFile << "\n";
                             llvm::raw_fd_ostream instr_op_stream(instrWarningsFile, res_code, llvm::sys::fs::F_Text);
