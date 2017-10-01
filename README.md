@@ -159,7 +159,15 @@ cd <repo_path>/helper_scripts/runner_scripts
 
 python run_all.py -l ~/mediatek_kernel/llvm_bitcode_out -a 1 -m ~/mediatek_kernel/kernel-3.18/makeout.txt -g aarch64-linux-android-gcc -n 2 -o ~/mediatek_kernel/kernel-3.18/out -k ~/mediatek_kernel/kernel-3.18 -f ~/mediatek_kernel/dr_checker_out
 ```
-The above command takes quite **some time (30 min - 1hr)**, all the analysis results will be in the folder: `~/mediatek_kernel/dr_checker_out`, for each entry point a `.json` file will be created which contains all the warnings in JSON format.
+The above command takes quite **some time (30 min - 1hr)**.
+##### 3.2.6.3 Understanding the output
+First, all the analysis results will be in the folder: **`~/mediatek_kernel/dr_checker_out` (argument given to the option `-f`)**, for each entry point a `.json` file will be created which contains all the warnings in JSON format. These `json` files contain warnings organized by contexts. 
+
+Second, The folder **`~/mediatek_kernel/dr_checker_out/instr_warnings` (w.r.t argument given to the option `-f`)** contains warnings organized by instruction location.
+
+These warnings could be analyzed using our [Visualizer](https://github.com/ucsb-seclab/dr_checker/tree/speedy/visualizer).
+
+Finally, a summary of all the warnings for each entry point organized by the type will be written to the output CSV file: **`~/mediatek_kernel/dr_checker_out/warnings_stats.csv` (w.r.t argument given to the option `-f`)**.
 
 #### 3.2.7 Things to note:
 ##### 3.2.7.1 Value for option `-g`
