@@ -27,6 +27,8 @@ namespace DRCHECKER {
                                                                              "strcat", "strncat", "strlcpy",
                                                                              "strlcat"};
 
+    const std::set<std::string> KernelFunctionChecker::atoiLikeFunctions{"kstrto", "simple_strto"};
+
     bool KernelFunctionChecker::is_debug_function(const Function *targetFunction) {
         if(targetFunction->hasName()) {
             std::string currFuncName = targetFunction->getName().str();
@@ -155,6 +157,28 @@ namespace DRCHECKER {
         // before this.
         assert(false);
         return tainted_args;
+    }
+
+    bool KernelFunctionChecker::is_atoi_function(const Function *targetFunction) {
+        if(targetFunction->isDeclaration() && targetFunction->hasName()) {
+            std::string funcName = targetFunction->getName().str();
+            for (const std::string &curr_func:KernelFunctionChecker::atoiLikeFunctions) {
+                if(funcName.compare(0, curr_func.length(), curr_func) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool KernelFunctionChecker::is_sscanf_function(const Function *targetFunction) {
+        std::string sscanf_func("sscanf");
+        if(targetFunction->isDeclaration() && targetFunction->hasName()) {
+            std::string funcName = targetFunction->getName().str();
+            return funcName.compare(0, sscanf_func.length(), sscanf_func) == 0;
+        }
+        return false;
+
     }
     
 }

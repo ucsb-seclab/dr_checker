@@ -283,7 +283,6 @@ namespace DRCHECKER {
         _super->visit(BB->begin(), BB->end());
     }
 
-#define DEBUG_GLOBAL_ANALYSIS
     void GlobalVisitor::analyze() {
         // the traversal order should not be null
         assert(this->traversalOrder != nullptr);

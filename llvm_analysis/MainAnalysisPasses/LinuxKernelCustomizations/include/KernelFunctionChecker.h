@@ -21,6 +21,7 @@ namespace DRCHECKER {
         static const std::set<std::string> memset_function_names;
         static const std::set<std::string> zero_initializers;
         static const std::set<std::string> copy_out_function_names;
+        static const std::set<std::string> atoiLikeFunctions;
 
         virtual bool is_function_allocator(const Function *targetFunction);
 
@@ -43,6 +44,9 @@ namespace DRCHECKER {
         virtual bool is_copy_out_function(const Function *targetFunction);
 
         virtual std::set<long> get_tainted_arguments(const Function *targetFunction);
+
+        virtual bool is_atoi_function(const Function *targetFunction);
+        virtual bool is_sscanf_function(const Function *targetFunction);
     };
 }
 
