@@ -193,7 +193,10 @@ Not all kernels need a separate out path. You may build kernel by not providing 
 ### 3.3 Visualizing DR.CHECKER results :snowflake:
 We provide a web-based UI to view all the warnings. Please refer [Visualization](https://github.com/ucsb-seclab/dr_checker/tree/speedy/visualizer).
 
-### 3.4 Post-processing DR.CHECKER results
+### 3.6 Disabling Vulnerability checkers
+You can disable one or more vulnerability checkers by uncommenting the corresponding `#define DISABLE_*` lines in [BugDetectorDriver.cpp](https://github.com/ucsb-seclab/dr_checker/blob/speedy/llvm_analysis/MainAnalysisPasses/SoundyAliasAnalysis/src/bug_detectors/BugDetectorDriver.cpp#L19)
+
+### 3.5 Post-processing DR.CHECKER results
 To your liking, we also provide a script to post-process the results. [Check it out](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/postprocessing.md).
 
 Have fun!!
