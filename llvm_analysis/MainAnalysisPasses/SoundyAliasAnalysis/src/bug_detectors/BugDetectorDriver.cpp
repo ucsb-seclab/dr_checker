@@ -16,21 +16,34 @@ using namespace llvm;
 
 namespace DRCHECKER {
 
+//#define DISABLE_INVALIDCASTDETECTOR
+//#define DISABLE_INTEGEROVERFLOWDETECTOR
+//#define DISABLE_TAINTEDPOINTERDEREFERENCE
+//#define DISABLE_KERNELUNITMEMORYLEAKDETECTOR
+//#define DISABLE_TAINEDSIZEDETECTOR
+//#define DISABLE_IMPROPERTAINTEDDATAUSEDETECTOR
+//#define DISABLE_TAINTEDLOOPBOUNDDETECTOR
+//#define DISABLE_GLOBALVARIABLERACEDETECTOR
+
     void BugDetectorDriver::addPreAnalysisBugDetectors(GlobalState &targetState,
                                                        Function *toAnalyze,
                                                        std::vector<Instruction *> *srcCallSites,
                                                        std::vector<VisitorCallback *> *allCallbacks,
                                                        FunctionChecker *targetChecker) {
 
+#ifndef DISABLE_INVALIDCASTDETECTOR
         VisitorCallback *invalidCastDetector = new InvalidCastDetector(targetState,
                                                                        toAnalyze,
                                                                        srcCallSites, targetChecker);
         allCallbacks->push_back(invalidCastDetector);
+#endif
+#ifndef DISABLE_INTEGEROVERFLOWDETECTOR
 
         VisitorCallback *integerOverflowDetector = new IntegerOverflowDetector(targetState,
                                                                            toAnalyze,
                                                                            srcCallSites, targetChecker);
         allCallbacks->push_back(integerOverflowDetector);
+#endif
 
     }
 
@@ -40,35 +53,46 @@ namespace DRCHECKER {
                                                         std::vector<VisitorCallback *> *allCallbacks,
                                                         FunctionChecker *targetChecker) {
 
+#ifndef DISABLE_TAINTEDPOINTERDEREFERENCE
         VisitorCallback *currTaintDetector = new TaintedPointerDereference(targetState,
                                                                            toAnalyze,
                                                                            srcCallSites, targetChecker);
         allCallbacks->push_back(currTaintDetector);
+#endif
+#ifndef DISABLE_KERNELUNITMEMORYLEAKDETECTOR
 
         VisitorCallback *currLeakDetector = new KernelUninitMemoryLeakDetector(targetState,
                                                                                toAnalyze,
                                                                                srcCallSites, targetChecker);
         allCallbacks->push_back(currLeakDetector);
-
+#endif
+#ifndef DISABLE_TAINEDSIZEDETECTOR
         VisitorCallback *currTaintSizeDetector = new TaintedSizeDetector(targetState,
                                                                          toAnalyze,
                                                                          srcCallSites, targetChecker);
         allCallbacks->push_back(currTaintSizeDetector);
+#endif
 
+#ifndef DISABLE_IMPROPERTAINTEDDATAUSEDETECTOR
         VisitorCallback *currImproperDataUseDetector = new ImproperTaintedDataUseDetector(targetState,
                                                                                           toAnalyze,
                                                                                           srcCallSites, targetChecker);
         allCallbacks->push_back(currImproperDataUseDetector);
+#endif
 
+#ifndef DISABLE_TAINTEDLOOPBOUNDDETECTOR
         VisitorCallback *taintedCondDetector = new TaintedLoopBoundDetector(targetState,
                                                                             toAnalyze,
                                                                             srcCallSites, targetChecker);
         allCallbacks->push_back(taintedCondDetector);
+#endif
+#ifndef DISABLE_GLOBALVARIABLERACEDETECTOR
 
         VisitorCallback *globalVarRaceDetector = new GlobalVariableRaceDetector(targetState,
                                                                                 toAnalyze,
                                                                                 srcCallSites, targetChecker);
         allCallbacks->push_back(globalVarRaceDetector);
+#endif
 
     }
 
