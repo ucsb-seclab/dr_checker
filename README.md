@@ -10,9 +10,8 @@ Now with an Amazing UI to view the warnings along with corresponding source file
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 ### Announcements
-**22 Sept 2017**: 
-* Precision and speed improvements made to the analysis core.
-* [UI](https://github.com/ucsb-seclab/dr_checker/tree/speedy/visualizer) to view all the warnings. (Thanks to [Sebastiano](https://github.com/Phat3))
+**11 Oct 2017**: 
+* We are accepting feature requests. Please open an issue for a feature you are interested in.
 
 ## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
