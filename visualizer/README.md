@@ -61,6 +61,7 @@ In this way it is possible to develop other types without touching the server.
     ```
     serve -s ./client/build
     ```
+    **Note**: After you open the client URL on a webpage, please wait for 30-50 seconds for results to populate on the webpage. This is because the server need to process all the JSONs and store them in a DB.
 
 ## Advanced use
 Our server component has 5 configuration options, that control the working of the server.
