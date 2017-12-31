@@ -115,4 +115,7 @@ def get_sourcecode(path):
 
 
 if __name__ == "__main__":
-    app.run()
+    if RUN_REMOTE:
+        app.run(host='0.0.0.0')
+    else:
+        app.run()

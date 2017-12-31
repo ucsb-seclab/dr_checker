@@ -3,6 +3,8 @@ List of all the settings of our server.
 """
 
 DEBUG = False
+# allow running on external interfaces
+RUN_REMOTE = True
 
 # dr_checker's output folder
 RESULTS_DIR = "/path/to/the/directory/containing/jsons"

@@ -64,8 +64,9 @@ In this way it is possible to develop other types without touching the server.
     **Note**: After you open the client URL on a webpage, please wait for 30-50 seconds for results to populate on the webpage. This is because the server need to process all the JSONs and store them in a DB.
 
 ## Advanced use
-Our server component has 5 configuration options, that control the working of the server.
+Our server component has six configuration options, that control the working of the server.
 * DEBUG: [Optional, Default=false] A Boolean flag to allow debug logs.
+* RUN_REMOTE: [Optional, Default=True] A Boolean flag to allow the server listen on all the interfaces.
 * RESULTS_DIR: [Required] Path to the directory containing all jsons.
 
 Following options will help in warnings when kernel source folder is different from the one used during compilation.
