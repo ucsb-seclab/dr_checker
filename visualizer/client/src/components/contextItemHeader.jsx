@@ -42,7 +42,7 @@ function ContextItemHeader(props) {
       className={classes.cardHeader}
       onClick={props.handleExpandClick}
     >
-      <Typography type="subheading" className={classes.cardTitle}>
+      <Typography variant="subheading" className={classes.cardTitle}>
         {props.title}
       </Typography>
       <div className={classes.flexGrow} />

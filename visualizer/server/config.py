@@ -1,13 +1,14 @@
 """
 List of all the settings of our server.
 """
+import os
 
 DEBUG = False
 # allow running on external interfaces
 RUN_REMOTE = True
 
 # dr_checker's output folder
-RESULTS_DIR = "/path/to/the/directory/containing/jsons"
+RESULTS_DIR = "/dockershare/outputjson" if os.path.exists("/dockershare/outputjson") else "/path/to/the/directory/containing/jsons"
 
 # this flag indicates if the path of the file name in the jsons should be replaced.
 # all paths that start with PATH_TO_BE_REPLACED will be replaced with SOURCECODE_DIR

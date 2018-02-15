@@ -20,7 +20,7 @@ function SectionTitle(props) {
 
   return (
     <Typography
-      type="subheading"
+      variant="subheading"
       align="center"
       className={classes.title}
     >

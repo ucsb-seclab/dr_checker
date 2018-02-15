@@ -27,7 +27,7 @@ class ResultItemBody extends React.PureComponent {
       <Collapse in={this.props.expanded} transitionDuration="auto" unmountOnExit>
         <Divider />
         <CardContent>
-          <Typography type="body2" className={classes.byTitle}>
+          <Typography variant="body2" className={classes.byTitle}>
             By Context
           </Typography>
           {
@@ -43,7 +43,7 @@ class ResultItemBody extends React.PureComponent {
               :
               (<h4>Loading...</h4>)
           }
-          <Typography type="body2" className={classes.byTitle}>
+          <Typography variant="body2" className={classes.byTitle}>
             By Instruction
           </Typography>
           {

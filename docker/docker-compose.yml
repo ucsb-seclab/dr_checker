@@ -1,0 +1,16 @@
+version: '2'
+services:
+  main:
+    build: ./main
+    volumes:
+      - ./dockershare:/dockershare
+  server:
+    build: ./v_server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./dockershare:/dockershare
+  client:
+    build: ./v_client
+    ports:
+      - "8080:5000"

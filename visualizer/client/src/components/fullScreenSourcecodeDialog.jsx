@@ -51,7 +51,7 @@ class FullScreenSourceCode extends React.Component {
               <IconButton color="contrast" onClick={this.handleRequestClose} aria-label="Close">
                 <CloseIcon />
               </IconButton>
-              <Typography type="title" color="inherit" className={classes.flex}>
+              <Typography variant="title" color="inherit" className={classes.flex}>
                 {this.props.title}
               </Typography>
             </Toolbar>

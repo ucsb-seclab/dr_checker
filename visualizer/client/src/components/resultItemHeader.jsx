@@ -39,7 +39,7 @@ function ResultItemHeader(props) {
       onClick={props.handleExpandClick}
     >
       {/* Title: function name */}
-      <Typography type="subheading" className={classes.cardTitle}>
+      <Typography variant="subheading" className={classes.cardTitle}>
         {props.title}
       </Typography>
       <div className={classes.flexGrow} />
