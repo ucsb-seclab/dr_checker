@@ -99,7 +99,7 @@ def main():
     os.system('mkdir -p ' + build_dir)
     os.chdir(build_dir)
     os.system('cmake ..')
-    multi_proc_count = cpu_count() - 2
+    multi_proc_count = cpu_count()
     if multi_proc_count > 0:
         log_info("Building in multiprocessing mode on ", multi_proc_count, " cores.")
         os.system('make -j' + str(multi_proc_count))
