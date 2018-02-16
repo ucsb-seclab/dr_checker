@@ -14,6 +14,12 @@ By default,
 
 Please follow the below instructions on how to use it.
 
+## Installing Docker
+If you already have `docker` and `docker-compose` on your machine. Please ignore this step.
+```
+cd <repo_path>/docker/
+./install_docker.sh
+```
 ## Setting up folders
 First, copy the kernel sources to `<repo_path>/docker/dockershare` folder.
 ## Getting images
@@ -106,3 +112,5 @@ serve -s ./client/build
 ```
 
 On your machine, open a browser and go to : `http://localhost:8080`. Enjoy :smile:
+
+
