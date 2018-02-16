@@ -8,7 +8,7 @@ DEBUG = False
 RUN_REMOTE = True
 
 # dr_checker's output folder
-RESULTS_DIR = "/dockershare/outputjson" if os.path.exists("/dockershare/outputjson") else "/path/to/the/directory/containing/jsons"
+RESULTS_DIR = "/dockershare/processed_json" if os.path.exists("/dockershare/processed_json") else "/path/to/the/directory/containing/jsons"
 
 # this flag indicates if the path of the file name in the jsons should be replaced.
 # all paths that start with PATH_TO_BE_REPLACED will be replaced with SOURCECODE_DIR

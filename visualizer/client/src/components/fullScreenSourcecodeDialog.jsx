@@ -44,7 +44,6 @@ class FullScreenSourceCode extends React.Component {
           fullScreen
           open={this.state.open}
           onRequestClose={this.handleRequestClose}
-          transition={<Slide direction="up" />}
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
