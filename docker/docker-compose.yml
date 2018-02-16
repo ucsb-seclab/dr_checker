@@ -2,15 +2,18 @@ version: '2'
 services:
   main:
     build: ./main
+    image: "drchecker/images:main_v1"
     volumes:
       - ./dockershare:/dockershare
   server:
     build: ./v_server
+    image: "drchecker/images:server_v1"
     ports:
       - "5000:5000"
     volumes:
       - ./dockershare:/dockershare
   client:
     build: ./v_client
+    image: "drchecker/images:client_v1"
     ports:
       - "8080:5000"
