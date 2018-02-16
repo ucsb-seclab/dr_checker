@@ -30,7 +30,6 @@ cd <repo_path>/docker/
 docker-compose run main /bin/bash
 ```
 From inside the main container follow all the instructions from: [Building](https://github.com/ucsb-seclab/dr_checker#2-building) to [Running Analysis](https://github.com/ucsb-seclab/dr_checker#32-running-drchecker-analysis)
-
 **NOTE: ALL THE FILES (like toolchains) NEEDED TO BUILD THE KERNEL SHOULD BE IN THE FOLDER: `<repo_path>/docker/dockershare`**
 ## Viewing results
 For this we need to run both the server and client images:
@@ -54,3 +53,56 @@ serve -s ./client/build
 ### Accessing the web-interface
 You can view all the results from: `http:://localhost:8080`
 ## Example
+We have uploaded a mediatek kernel [33.2.A.3.123.tar.bz2](https://drive.google.com/open?id=0B4XwT5D6qkNmLXdNTk93MjU3SWM). 
+First download and extract the above file.
+
+Extract the above file into the folder: `<repo_path>/docker/dockershare/mediatek_kernel`
+
+### Building and Running the analysis
+```
+cd <repo_path>/docker/
+docker-compose run main /bin/bash
+# inside the new shell
+cd /dockershare/mediatek_kernel
+source ./env.sh
+cd kernel-3.18
+# the following step may not be needed depending on the kernel
+mkdir out
+make O=out ARCH=arm64 tubads_defconfig
+
+# this following command copies all the compilation commands to makeout.txt (This might take time)
+make V=1 -j8 O=out ARCH=arm64 > makeout.txt 2>&1
+cd /dr_checker/gitrepo/helper_scripts/runner_scripts
+
+python run_all.py -l /dockershare/mediatek_kernel/llvm_bitcode_out -a 1 -m /dockershare/mediatek_kernel/kernel-3.18/makeout.txt -g aarch64-linux-android-gcc -n 2 -o /dockershare/mediatek_kernel/kernel-3.18/out -k /dockershare/mediatek_kernel/kernel-3.18 -f /dockershare/mediatek_kernel/dr_checker_out
+```
+The above command takes quite **some time (30 min - 1hr)**.
+All the results JSONs will be present at `/dockershare/mediatek_kernel/dr_checker_out` (value of the option `-l`)
+
+### Visualizing the results
+#### Server
+Run the server container on your machine:
+```
+cd <repo_path>/docker/
+docker-compose run server /bin/bash
+```
+With in the running container, change the results dir in server config file: `/dr_checker/gitrepo/visualizer/server/config.py`
+```
+RESULTS_DIR=/dockershare/mediatek_kernel/dr_checker_out
+```
+Run the server (in the container shell)
+```
+cd /dr_checker/gitrepo/visualizer
+python ./server/app.py
+```
+#### Client
+Open a new terminal on your machine and run the client container:
+```
+cd <repo_path>/docker/
+docker-compose run client /bin/bash
+# with in the container shell
+cd /dr_checker/gitrepo/visualizer
+serve -s ./client/build
+```
+
+On your machine, open a browser and go to : `http://localhost:8080`. Enjoy :smile:
