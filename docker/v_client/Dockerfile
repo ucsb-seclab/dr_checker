@@ -6,11 +6,12 @@ RUN apt-get install -y --no-install-recommends apt-utils
 
 RUN apt-get -y install sl htop psmisc psutils time iotop iputils-ping net-tools build-essential ssh sshfs bash-completion rsync \
                        git screen stress tmux iperf libxml2-dev openjdk-8-jdk ipython pypy python-dev python-pip virtualenvwrapper \
-                       libxml2-dev pkg-config curl cmake sudo
+                       libxml2-dev pkg-config curl cmake sudo vim
 
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && apt-get -y install nodejs
 
 ADD install.sh /tmp/install.sh
-RUN chmod a+rx /tmp/install.sh && /tmp/install.sh
+RUN chmod a+rx /tmp/install.sh
+RUN /tmp/install.sh
 
 CMD ["tail", "-f", "/dev/null" ]
