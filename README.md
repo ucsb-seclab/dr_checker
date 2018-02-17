@@ -10,8 +10,8 @@ Now with an Amazing UI to view the warnings along with corresponding source file
 ### Tested on
 Ubuntu >= 14.04.5 LTS
 ### Announcements
-**11 Oct 2017**: 
-* We are accepting feature requests. Please open an issue for a feature you are interested in.
+**16 Feb 2018**:
+* DR.CHECKER has been dockerized. Refer [Docker Usage](https://github.com/ucsb-seclab/dr_checker/blob/speedy/docs/docker.md) on how to use it.
 
 ## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
