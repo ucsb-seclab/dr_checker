@@ -36,6 +36,7 @@ cd <repo_path>/docker/
 docker-compose run main /bin/bash
 ```
 From inside the main container follow all the instructions from: [Building](https://github.com/ucsb-seclab/dr_checker#2-building) to [Running Analysis](https://github.com/ucsb-seclab/dr_checker#32-running-drchecker-analysis)
+
 **NOTE: ALL THE FILES (like toolchains) NEEDED TO BUILD THE KERNEL SHOULD BE IN THE FOLDER: `<repo_path>/docker/dockershare`**
 ## Viewing results
 For this we need to run both the server and client images:
