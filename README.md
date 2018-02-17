@@ -15,6 +15,9 @@ Ubuntu >= 14.04.5 LTS
 
 ## [Frequently Asked Questions](https://github.com/ucsb-seclab/dr_checker/blob/master/docs/faq.md)
 
+## 0. Using Dockerized Setup (Recommended)
+Refer the [Docker Usage](https://github.com/ucsb-seclab/dr_checker/blob/speedy/docs/docker.md) document for details on how to use DR.CHECKER in a pre-built docker container.
+
 ## 1. Setup
 Our implementation is based on LLVM, specifically LLVM 3.8. We also need tools like `c2xml` to parse headers.
 
