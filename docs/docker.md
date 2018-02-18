@@ -1,6 +1,6 @@
 Using DR.CHECKER from docker
 ===================
-Thanks to [Sebastiano](https://github.com/Phat3), we created a docokerized environment for DR.CHECKER. 
+Thanks to [Sebastiano](https://github.com/Phat3), we created a dockerized environment for DR.CHECKER. 
 We have three images main, server and client:
 * main: This is the main analysis image, that has all the LLVM setup and can the actual DR.CHECKER analysis.
 * server: This is the visualization server, that processes the JSONs and serves them.
