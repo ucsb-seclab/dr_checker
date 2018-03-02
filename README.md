@@ -21,9 +21,9 @@ Refer the [Docker Usage](https://github.com/ucsb-seclab/dr_checker/blob/speedy/d
 ## 1. Setup
 Our implementation is based on LLVM, specifically LLVM 3.8. We also need tools like `c2xml` to parse headers.
 
-First, make sure that you have cmake and libxml (required for c2xml):
+First, make sure that you have cmake (used by setup/build scripts) and libxml (required for c2xml):
 ```
-sudo apt-get install libxml2-dev cmake
+sudo apt-get install cmake libxml2-dev
 ```
 
 Next, We have created a single script, which downloads and builds all the required tools.
