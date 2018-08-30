@@ -204,5 +204,5 @@ To your liking, we also provide a script to post-process the results. [Check it 
 Have fun!!
 
 ## 4. Contact
-* Slack: [JOIN SLACK CHANNEL](https://join.slack.com/t/driverchecking/shared_invite/enQtMjQzNzExNzc5MjY4LWU5ODEyODk0NzFjMjEyNWU5MTQxNTkxYzEwZWE2YjI0MzUyYmEyZDNiOWE5NDg0ZTg0YTE2YWJiMzM0ODFlZDA)
+* Slack: [JOIN SLACK CHANNEL](https://join.slack.com/t/driverchecking/shared_invite/enQtNDI3NDgyOTI4MTM1LTk3NTc4OWIxZTQyZjljNzkzMGM4YjczZjI4OTY0ODgyMmY1MWZmM2ZhZGM2OWY0NTMwOWQ5MmZjNzExMTQwODQ)
 * Aravind Machiry (machiry@cs.ucsb.edu)
